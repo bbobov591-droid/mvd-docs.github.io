@@ -181,6 +181,9 @@
 </div>
 
 <div class="dropdown" id="dropdown">
+  <div class="section-label">ПДН</div>
+  <button class="nav-btn" data-doc="pdn-register" onclick="switchDoc('pdn-register')">Постановка на учёт</button>
+
   <div class="section-label">ППСП</div>
   <button class="nav-btn active" data-doc="pps-journal" onclick="switchDoc('pps-journal')">Бортовой журнал</button>
   <button class="nav-btn" data-doc="pps-admin" onclick="switchDoc('pps-admin')">Протокол задержания</button>
@@ -243,6 +246,49 @@ const WEBHOOK_URL = "https://discord.com/api/webhooks/1560636556673552506/qkn1vr
 // ДОКУМЕНТЫ
 // ============================================================
 const DOCS = {
+  // ===== ПДН =====
+  'pdn-register': {
+    title: 'Заключение о постановке на профилактический учёт в ПДН', shortName: 'Постановка на учёт ПДН', dept: 'ПДН',
+    fields: [
+      { id: 'officer', label: 'Инспектор ПДН (должность, спец. звание, ФИО)', type: 'text', full: true },
+      { id: 'fio', label: 'Ф.И.О. несовершеннолетнего / законного представителя', type: 'text', full: true },
+      { id: 'birth', label: 'Дата рождения', type: 'text' },
+      { id: 'address', label: 'Адрес проживания', type: 'text', full: true },
+      { id: 'basis', label: 'Информация о правонарушениях / антиобщественных действиях', type: 'textarea', full: true },
+      { id: 'point', label: 'Пункт Инструкции (основание)', type: 'text' },
+      { id: 'decision', label: 'Решение (поставить / не ставить)', type: 'text', full: true }
+    ],
+    render: (d) => `
+      <div style="text-align:right; margin-bottom:12px;">
+        <strong>Утверждаю</strong><br>
+        <span class="field" style="min-width:200px;">${d.officer||'________________'}</span>
+      </div>
+      <h2>ЗАКЛЮЧЕНИЕ</h2>
+      <div class="subtitle">о постановке несовершеннолетнего на профилактический учёт в ПДН и заведении учётно-профилактической карточки</div>
+      <div class="indent" style="margin-top:16px;">
+        Я, инспектор ПДН <span class="field" style="min-width:300px;">${d.officer||'________________'}</span>, рассмотрев материал в отношении
+        <span class="field" style="min-width:300px;">${d.fio||'________________'}</span>,
+        <span class="field" style="min-width:150px;">${d.birth||'__.__.____'}</span> года рождения,
+        проживающего по адресу: <span class="field" style="min-width:300px;">${d.address||'________________'}</span>
+      </div>
+      <div class="section-title">Установил:</div>
+      <div class="box" style="min-height:100px;">${(d.basis||'').replace(/\n/g,'<br>')||'&nbsp;'}</div>
+      <div class="indent" style="margin-top:12px;">
+        Таким образом, <span class="field" style="min-width:250px;">${d.fio||'________________'}</span>
+        допустил совершение деяния, предусмотренного пунктом
+        <span class="field" style="min-width:80px;">${d.point||'____'}</span> Инструкции по организации деятельности подразделений по делам несовершеннолетних органов внутренних дел Российской Федерации.
+      </div>
+      <div class="indent" style="margin-top:12px;">
+        В связи с изложенным считаю целесообразным:
+      </div>
+      <div class="box" style="min-height:60px;">${(d.decision||'').replace(/\n/g,'<br>')||'&nbsp;'}</div>
+      <div class="signature">
+        <span class="field" style="min-width:250px;">${d.officer||'________________'}</span><br>
+        (должность, специальное звание, фамилия, инициалы, подпись)
+      </div>
+    `
+  },
+
   // ===== ППСП =====
   'pps-journal': {
     title: 'Бортовой журнал автопатруля', shortName: 'Бортовой журнал', dept: 'ППСП',
