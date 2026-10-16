@@ -245,7 +245,7 @@ const WEBHOOK_URL = "https://discord.com/api/webhooks/1560636556673552506/qkn1vr
 const DOCS = {
   // ===== ППСП =====
   'pps-journal': {
-    title: 'Бортовой журнал автопатруля', shortName: 'Бортовой журнал',
+    title: 'Бортовой журнал автопатруля', shortName: 'Бортовой журнал', dept: 'ППСП',
     fields: [
       { id: 'date', label: 'Дата', type: 'date' },
       { id: 'time_start', label: 'Начало службы', type: 'time' },
@@ -272,7 +272,7 @@ const DOCS = {
     `
   },
   'pps-admin': {
-    title: 'Протокол об административном задержании', shortName: 'Протокол задержания',
+    title: 'Протокол об административном задержании', shortName: 'Протокол задержания', dept: 'ППСП',
     fields: [
       { id: 'date', label: 'Дата', type: 'date' }, { id: 'time', label: 'Время', type: 'time' },
       { id: 'place', label: 'Место составления', type: 'text', full: true },
@@ -294,7 +294,7 @@ const DOCS = {
     `
   },
   'pps-search': {
-    title: 'Протокол о личном досмотре', shortName: 'Протокол досмотра',
+    title: 'Протокол о личном досмотре', shortName: 'Протокол досмотра', dept: 'ППСП',
     fields: [
       { id: 'date', label: 'Дата', type: 'date' }, { id: 'time', label: 'Время', type: 'time' },
       { id: 'place', label: 'Место составления', type: 'text', full: true },
@@ -317,7 +317,7 @@ const DOCS = {
     `
   },
   'pps-seize': {
-    title: 'Протокол об изъятии вещей и документов', shortName: 'Протокол изъятия',
+    title: 'Протокол об изъятии вещей и документов', shortName: 'Протокол изъятия', dept: 'ППСП',
     fields: [
       { id: 'date', label: 'Дата', type: 'date' }, { id: 'time', label: 'Время', type: 'time' },
       { id: 'place', label: 'Место составления', type: 'text', full: true },
@@ -341,7 +341,7 @@ const DOCS = {
 
   // ===== ДПС =====
   'dps-offense': {
-    title: 'Протокол об административном правонарушении', shortName: 'Протокол об АП',
+    title: 'Протокол об административном правонарушении', shortName: 'Протокол об АП', dept: 'ДПС',
     fields: [
       { id: 'date', label: 'Дата', type: 'date' }, { id: 'time', label: 'Время', type: 'time' },
       { id: 'place', label: 'Место составления', type: 'text', full: true },
@@ -365,7 +365,7 @@ const DOCS = {
     `
   },
   'dps-scheme': {
-    title: 'Схема места совершения АП', shortName: 'Схема места АП',
+    title: 'Схема места совершения АП', shortName: 'Схема места АП', dept: 'ДПС',
     fields: [
       { id: 'date', label: 'Дата', type: 'date' }, { id: 'time', label: 'Время', type: 'time' },
       { id: 'place', label: 'Место', type: 'text', full: true },
@@ -384,7 +384,7 @@ const DOCS = {
     `
   },
   'dps-remove': {
-    title: 'Протокол об отстранении от управления ТС', shortName: 'Отстранение от ТС',
+    title: 'Протокол об отстранении от управления ТС', shortName: 'Отстранение от ТС', dept: 'ДПС',
     fields: [
       { id: 'date', label: 'Дата', type: 'date' }, { id: 'time', label: 'Время', type: 'time' },
       { id: 'place', label: 'Место составления', type: 'text', full: true },
@@ -407,7 +407,7 @@ const DOCS = {
 
   // ===== ОУР =====
   'our-wanted': {
-    title: 'Разыскная ориентировка', shortName: 'Ориентировка',
+    title: 'Разыскная ориентировка', shortName: 'Ориентировка', dept: 'ОУР',
     fields: [
       { id: 'fio', label: 'ФИО разыскиваемого', type: 'text', full: true },
       { id: 'birth', label: 'Год рождения', type: 'text' },
@@ -425,7 +425,7 @@ const DOCS = {
     `
   },
   'our-report': {
-    title: 'Рапорт о проделанной работе', shortName: 'Рапорт о работе',
+    title: 'Рапорт о проделанной работе', shortName: 'Рапорт о работе', dept: 'ОУР',
     fields: [
       { id: 'to', label: 'Кому', type: 'text', full: true },
       { id: 'officer', label: 'От (должность, звание, ФИО)', type: 'text', full: true },
@@ -441,7 +441,7 @@ const DOCS = {
     `
   },
   'our-rap': {
-    title: 'Рапорт об обнаружении признаков преступления', shortName: 'Рапорт о преступлении',
+    title: 'Рапорт об обнаружении признаков преступления', shortName: 'Рапорт о преступлении', dept: 'ОУР',
     fields: [
       { id: 'to', label: 'Кому', type: 'text', full: true },
       { id: 'from', label: 'От', type: 'text', full: true },
@@ -500,7 +500,7 @@ const DOCS = {
 
   // ===== ОУР — ДОПОЛНИТЕЛЬНЫЕ =====
   'our-detain': {
-    title: 'Протокол задержания', shortName: 'Протокол задержания',
+    title: 'Протокол задержания', shortName: 'Протокол задержания', dept: 'ОУР',
     fields: [
       { id: 'to', label: 'Кому', type: 'text', full: true },
       { id: 'from', label: 'От', type: 'text', full: true },
@@ -558,7 +558,7 @@ const DOCS = {
     `
   },
   'our-orm': {
-    title: 'Рапорт о проведении ОРМ', shortName: 'Рапорт ОРМ',
+    title: 'Рапорт о проведении ОРМ', shortName: 'Рапорт ОРМ', dept: 'ОУР',
     fields: [
       { id: 'to', label: 'Кому', type: 'text', full: true },
       { id: 'from', label: 'От', type: 'text', full: true },
@@ -613,7 +613,7 @@ const DOCS = {
     `
   },
   'our-explain': {
-    title: 'Объяснительная', shortName: 'Объяснительная',
+    title: 'Объяснительная', shortName: 'Объяснительная', dept: 'ОУР',
     fields: [
       { id: 'to', label: 'Кому', type: 'text', full: true },
       { id: 'from', label: 'От', type: 'text', full: true },
@@ -643,7 +643,7 @@ const DOCS = {
     `
   },
   'our-request': {
-    title: 'Служебный запрос', shortName: 'Служебный запрос',
+    title: 'Служебный запрос', shortName: 'Служебный запрос', dept: 'ОУР',
     fields: [
       { id: 'to', label: 'Кому', type: 'text', full: true },
       { id: 'from', label: 'От', type: 'text', full: true },
@@ -685,7 +685,7 @@ const DOCS = {
     `
   },
   'our-weapon': {
-    title: 'Рапорт о закреплении оружия', shortName: 'Закреп оружия',
+    title: 'Рапорт о закреплении оружия', shortName: 'Закреп оружия', dept: 'ОУР',
     fields: [
       { id: 'to', label: 'Кому', type: 'text', full: true },
       { id: 'from', label: 'От', type: 'text', full: true },
@@ -882,7 +882,7 @@ async function sendToDiscord() {
     formData.append('files[0]', pngBlob, pngName);
     formData.append('files[1]', pdfBlob, pdfName);
     formData.append('payload_json', JSON.stringify({
-      content: `📄 **${DOCS[currentDoc].title}**\nОтправлено с сайта документооборота.`,
+      content: `📄 **${DOCS[currentDoc].dept}** — ${DOCS[currentDoc].title}\nОтправлено с сайта документооборота.`,
       username: 'МВД Документооборот',
       attachments: [
         { id: 0, filename: pngName },
