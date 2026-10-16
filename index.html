@@ -32,7 +32,7 @@
   .dropdown {
     position: absolute; top: 60px; right: 20px;
     background: #16162a; border: 1px solid #2a2a4a;
-    border-radius: 8px; min-width: 340px;
+    border-radius: 8px; min-width: 360px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.6); z-index: 200;
     display: none; max-height: 80vh; overflow-y: auto;
   }
@@ -129,6 +129,10 @@
     text-align: center; font-weight: bold; font-size: 11pt;
     margin-bottom: 4px;
   }
+  .document .ping-block {
+    margin-top: 20px; font-size: 11pt;
+  }
+  .document .ping-block .ping-line { margin: 4px 0; }
 
   .actions {
     padding: 14px 24px; background: #16162a;
@@ -206,6 +210,12 @@
   <button class="nav-btn" data-doc="our-explain" onclick="switchDoc('our-explain')">Объяснительная</button>
   <button class="nav-btn" data-doc="our-request" onclick="switchDoc('our-request')">Служебный запрос</button>
   <button class="nav-btn" data-doc="our-weapon" onclick="switchDoc('our-weapon')">Рапорт о закреплении оружия</button>
+
+  <div class="section-label">Рапорты</div>
+  <button class="nav-btn" data-doc="rap-dismiss" onclick="switchDoc('rap-dismiss')">На увольнение</button>
+  <button class="nav-btn" data-doc="rap-vacation" onclick="switchDoc('rap-vacation')">На отпуск</button>
+  <button class="nav-btn" data-doc="rap-promote" onclick="switchDoc('rap-promote')">На повышение</button>
+  <button class="nav-btn" data-doc="rap-transfer" onclick="switchDoc('rap-transfer')">На перевод</button>
 </div>
 
 <div class="page active" id="page-form">
@@ -765,6 +775,151 @@ const DOCS = {
       <div class="section-title">ДОПОЛНИТЕЛЬНЫЕ СВЕДЕНИЯ:</div>
       <div class="box">${d.extra||'&nbsp;'}</div>
       <div class="signature">Подпись: _______________</div>
+    `
+  },
+
+  // ===== РАПОРТЫ (общие) =====
+  'rap-dismiss': {
+    title: 'Рапорт на увольнение', shortName: 'На увольнение', dept: 'Рапорты',
+    fields: [
+      { id: 'position', label: 'Должность', type: 'text', full: true },
+      { id: 'rank', label: 'Специальное звание', type: 'text', full: true },
+      { id: 'fio', label: 'ФИО', type: 'text', full: true },
+      { id: 'date', label: 'Дата', type: 'date' },
+      { id: 'ping_mvd', label: 'Пинг начальника МВД', type: 'text', full: true },
+      { id: 'ping_police', label: 'Пинг начальника полиции', type: 'text', full: true },
+      { id: 'ping_unit', label: 'Пинг начальника подразделения', type: 'text', full: true }
+    ],
+    render: (d) => `
+      <div style="text-align:right; margin-bottom:24px;">
+        Начальнику МУ МВД России<br>
+        «Зареченское»<br>
+        генерал-майору полиции<br>
+        Бойко М.В.
+      </div>
+      <h2>Р А П О Р Т</h2>
+      <div class="indent" style="margin-top:24px;">
+        Прошу Вас уволить меня по собственному желанию по подпункту 2 части 2 статьи 82 Федерального закона от 30 ноября 2011 года «О службе в ОВД РФ и внесении изменений в отдельные законодательные акты РФ» (по инициативе сотрудника).
+      </div>
+      <div class="indent" style="margin-top:12px;">
+        От прохождения военно-врачебной комиссии при увольнении отказываюсь, так как считаю себя здоровым.
+      </div>
+      <div class="line" style="margin-top:24px;">Должность: <span class="field" style="min-width:250px;">${d.position||'________________'}</span></div>
+      <div class="line">Специальное звание: <span class="field" style="min-width:250px;">${d.rank||'________________'}</span></div>
+      <div class="line">ФИО: <span class="field" style="min-width:300px;">${d.fio||'________________'}</span></div>
+      <div class="line" style="margin-top:16px;">Дата: «<span class="field">${d.date?d.date.split('-')[2]:'__'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> 20<span class="field">${d.date?d.date.split('-')[0].slice(-2):'__'}</span> г.</div>
+      <div class="line">Подпись: _______________</div>
+      <div class="ping-block">
+        <div class="ping-line">Пинг начальника МВД: ${d.ping_mvd||'____'}</div>
+        <div class="ping-line">Пинг начальника полиции: ${d.ping_police||'____'}</div>
+        <div class="ping-line">Пинг начальника подразделения: ${d.ping_unit||'____'}</div>
+      </div>
+    `
+  },
+  'rap-vacation': {
+    title: 'Рапорт на отпуск', shortName: 'На отпуск', dept: 'Рапорты',
+    fields: [
+      { id: 'days', label: 'Количество календарных дней', type: 'text' },
+      { id: 'position', label: 'Должность', type: 'text', full: true },
+      { id: 'rank', label: 'Специальное звание', type: 'text', full: true },
+      { id: 'fio', label: 'ФИО', type: 'text', full: true },
+      { id: 'date', label: 'Дата', type: 'date' },
+      { id: 'ping_mvd', label: 'Пинг начальника МВД', type: 'text', full: true },
+      { id: 'ping_police', label: 'Пинг начальника полиции', type: 'text', full: true }
+    ],
+    render: (d) => `
+      <div style="text-align:right; margin-bottom:24px;">
+        Начальнику МУ МВД России<br>
+        «Зареченское»<br>
+        генерал-майору полиции<br>
+        Бойко М.В.
+      </div>
+      <h2>Р А П О Р Т</h2>
+      <div class="indent" style="margin-top:24px;">
+        Прошу Вас, в соответствии с ч. 1 ст. 57 ФЗ от 30.11.2011 № 342-ФЗ «О службе в ОВД РФ и внесении изменений в отдельные законодательные акты РФ», предоставить мне оплачиваемый основной отпуск сроком на <span class="field" style="min-width:80px;">${d.days||'____'}</span> календарных дней.
+      </div>
+      <div class="indent" style="margin-top:12px;">
+        Разрешение начальника подразделения имеется.
+      </div>
+      <div class="line" style="margin-top:24px;">Должность: <span class="field" style="min-width:250px;">${d.position||'________________'}</span></div>
+      <div class="line">Специальное звание: <span class="field" style="min-width:250px;">${d.rank||'________________'}</span></div>
+      <div class="line">ФИО: <span class="field" style="min-width:300px;">${d.fio||'________________'}</span></div>
+      <div class="line" style="margin-top:16px;">Дата: «<span class="field">${d.date?d.date.split('-')[2]:'__'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> 20<span class="field">${d.date?d.date.split('-')[0].slice(-2):'__'}</span> г.</div>
+      <div class="line">Подпись: _______________</div>
+      <div class="ping-block">
+        <div class="ping-line">Пинг начальника МВД: ${d.ping_mvd||'____'}</div>
+        <div class="ping-line">Пинг начальника полиции: ${d.ping_police||'____'}</div>
+      </div>
+    `
+  },
+  'rap-promote': {
+    title: 'Рапорт на повышение', shortName: 'На повышение', dept: 'Рапорты',
+    fields: [
+      { id: 'position', label: 'Должность', type: 'text', full: true },
+      { id: 'rank', label: 'Специальное звание', type: 'text', full: true },
+      { id: 'fio', label: 'ФИО (полностью)', type: 'text', full: true },
+      { id: 'date', label: 'Дата', type: 'date' },
+      { id: 'early', label: 'Досрочно? (да / нет)', type: 'text' },
+      { id: 'ping_mvd', label: 'Пинг начальника МВД', type: 'text', full: true },
+      { id: 'ping_police', label: 'Пинг начальника полиции', type: 'text', full: true }
+    ],
+    render: (d) => `
+      <div style="text-align:right; margin-bottom:24px;">
+        Начальнику МУ МВД России<br>
+        «Зареченское»<br>
+        генерал-майору полиции<br>
+        Бойко М.В.
+      </div>
+      <h2>Р А П О Р Т</h2>
+      <div class="indent" style="margin-top:24px;">
+        Прошу Вас, в соответствии со ст. 41 и 43 ФЗ от 30.11.2011 № 342-ФЗ «О службе в ОВД РФ и внесении изменений в отдельные законодательные акты РФ», рассмотреть возможность присвоения мне очередного специального звания${d.early?' <strong>досрочно</strong>':''}.
+      </div>
+      <div class="line" style="margin-top:24px;">Должность: <span class="field" style="min-width:250px;">${d.position||'________________'}</span></div>
+      <div class="line">Специальное звание: <span class="field" style="min-width:250px;">${d.rank||'________________'}</span></div>
+      <div class="line">ФИО (полностью): <span class="field" style="min-width:300px;">${d.fio||'________________'}</span></div>
+      <div class="line" style="margin-top:16px;">Дата: «<span class="field">${d.date?d.date.split('-')[2]:'__'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> 20<span class="field">${d.date?d.date.split('-')[0].slice(-2):'__'}</span> г.</div>
+      <div class="line">Подпись: _______________</div>
+      <div class="ping-block">
+        <div class="ping-line">Пинг начальника МВД: ${d.ping_mvd||'____'}</div>
+        <div class="ping-line">Пинг начальника полиции: ${d.ping_police||'____'}</div>
+      </div>
+    `
+  },
+  'rap-transfer': {
+    title: 'Рапорт на перевод', shortName: 'На перевод', dept: 'Рапорты',
+    fields: [
+      { id: 'where', label: 'Куда перевести', type: 'text', full: true },
+      { id: 'position', label: 'Должность', type: 'text', full: true },
+      { id: 'rank', label: 'Специальное звание', type: 'text', full: true },
+      { id: 'fio', label: 'ФИО (полностью)', type: 'text', full: true },
+      { id: 'date', label: 'Дата', type: 'date' },
+      { id: 'ping_mvd', label: 'Пинг начальника МВД', type: 'text', full: true },
+      { id: 'ping_police', label: 'Пинг начальника полиции', type: 'text', full: true },
+      { id: 'ping_unit_from', label: 'Пинг начальника подразделения (откуда)', type: 'text', full: true },
+      { id: 'ping_unit_to', label: 'Пинг начальника подразделения (куда)', type: 'text', full: true }
+    ],
+    render: (d) => `
+      <div style="text-align:right; margin-bottom:24px;">
+        Начальнику МУ МВД России<br>
+        «Зареченское»<br>
+        генерал-майору полиции<br>
+        Бойко М.В.
+      </div>
+      <h2>Р А П О Р Т</h2>
+      <div class="indent" style="margin-top:24px;">
+        Прошу Вас, в соответствии со ст. 30 ФЗ от 30.11.2011 № 342-ФЗ «О службе в ОВД РФ и внесении изменений в отдельные законодательные акты РФ», перевести меня <span class="field" style="min-width:250px;">${d.where||'________________'}</span>, по собственной инициативе.
+      </div>
+      <div class="line" style="margin-top:24px;">Должность: <span class="field" style="min-width:250px;">${d.position||'________________'}</span></div>
+      <div class="line">Специальное звание: <span class="field" style="min-width:250px;">${d.rank||'________________'}</span></div>
+      <div class="line">ФИО (полностью): <span class="field" style="min-width:300px;">${d.fio||'________________'}</span></div>
+      <div class="line" style="margin-top:16px;">Дата: «<span class="field">${d.date?d.date.split('-')[2]:'__'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> 20<span class="field">${d.date?d.date.split('-')[0].slice(-2):'__'}</span> г.</div>
+      <div class="line">Подпись: _______________</div>
+      <div class="ping-block">
+        <div class="ping-line">Пинг начальника МВД: ${d.ping_mvd||'____'}</div>
+        <div class="ping-line">Пинг начальника полиции: ${d.ping_police||'____'}</div>
+        <div class="ping-line">Пинг начальника подразделения (откуда): ${d.ping_unit_from||'____'}</div>
+        <div class="ping-line">Пинг начальника подразделения (куда): ${d.ping_unit_to||'____'}</div>
+      </div>
     `
   }
 };
