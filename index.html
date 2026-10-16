@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Документооборот МВД</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -12,8 +13,6 @@
     background: #0f0f1a; color: #e0e0e0;
     min-height: 100vh; display: flex; flex-direction: column;
   }
-
-  /* TOPBAR */
   .topbar {
     background: #16162a; padding: 12px 20px;
     display: flex; align-items: center; gap: 16px;
@@ -30,11 +29,10 @@
   }
   .burger-btn:hover { background: #2a2a4a; }
 
-  /* DROPDOWN */
   .dropdown {
     position: absolute; top: 60px; right: 20px;
     background: #16162a; border: 1px solid #2a2a4a;
-    border-radius: 8px; min-width: 320px;
+    border-radius: 8px; min-width: 340px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.6); z-index: 200;
     display: none; max-height: 80vh; overflow-y: auto;
   }
@@ -56,16 +54,11 @@
     border-right-color: #f0c040; font-weight: 500;
   }
 
-  /* PAGE 1: ФОРМА */
   .page { flex: 1; display: none; flex-direction: column; overflow: hidden; }
   .page.active { display: flex; }
 
-  .form-container {
-    flex: 1; padding: 24px 32px; overflow-y: auto;
-  }
-  .form-container h2 {
-    font-size: 16px; color: #f0c040; margin-bottom: 20px; font-weight: 600;
-  }
+  .form-container { flex: 1; padding: 24px 32px; overflow-y: auto; }
+  .form-container h2 { font-size: 16px; color: #f0c040; margin-bottom: 20px; font-weight: 600; }
   .form-grid {
     display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 14px;
@@ -81,9 +74,7 @@
     background: #0f0f1a; color: #e0e0e0; border-radius: 6px;
     font-family: inherit;
   }
-  .form-group input:focus, .form-group textarea:focus {
-    outline: none; border-color: #f0c040;
-  }
+  .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #f0c040; }
   .form-group textarea { resize: vertical; min-height: 70px; }
 
   .photo-block { margin-top: 24px; border-top: 1px solid #2a2a4a; padding-top: 16px; }
@@ -107,7 +98,6 @@
     cursor: pointer; font-size: 12px; line-height: 1;
   }
 
-  /* PAGE 2: ДОКУМЕНТ */
   .doc-container {
     flex: 1; padding: 24px; overflow-y: auto;
     display: flex; justify-content: center; background: #0a0a14;
@@ -135,8 +125,11 @@
     border: 1px solid #000; padding: 10px; min-height: 50px;
     margin: 8px 0; font-size: 11pt;
   }
+  .document .header-mvd {
+    text-align: center; font-weight: bold; font-size: 11pt;
+    margin-bottom: 4px;
+  }
 
-  /* ACTIONS */
   .actions {
     padding: 14px 24px; background: #16162a;
     display: flex; gap: 10px; border-top: 1px solid #2a2a4a;
@@ -193,7 +186,6 @@
   <button class="nav-btn" data-doc="pps-admin" onclick="switchDoc('pps-admin')">Протокол задержания</button>
   <button class="nav-btn" data-doc="pps-search" onclick="switchDoc('pps-search')">Протокол досмотра</button>
   <button class="nav-btn" data-doc="pps-seize" onclick="switchDoc('pps-seize')">Протокол изъятия</button>
-  <button class="nav-btn" data-doc="pps-rap" onclick="switchDoc('pps-rap')">Рапорт о преступлении</button>
 
   <div class="section-label">ДПС</div>
   <button class="nav-btn" data-doc="dps-offense" onclick="switchDoc('dps-offense')">Протокол об АП</button>
@@ -204,14 +196,19 @@
   <button class="nav-btn" data-doc="our-wanted" onclick="switchDoc('our-wanted')">Разыскная ориентировка</button>
   <button class="nav-btn" data-doc="our-report" onclick="switchDoc('our-report')">Рапорт о работе</button>
   <button class="nav-btn" data-doc="our-rap" onclick="switchDoc('our-rap')">Рапорт о преступлении</button>
+
+  <div class="section-label">ОУР — дополнительные</div>
+  <button class="nav-btn" data-doc="our-detain" onclick="switchDoc('our-detain')">Протокол задержания</button>
+  <button class="nav-btn" data-doc="our-orm" onclick="switchDoc('our-orm')">Рапорт о проведении ОРМ</button>
+  <button class="nav-btn" data-doc="our-explain" onclick="switchDoc('our-explain')">Объяснительная</button>
+  <button class="nav-btn" data-doc="our-request" onclick="switchDoc('our-request')">Служебный запрос</button>
+  <button class="nav-btn" data-doc="our-weapon" onclick="switchDoc('our-weapon')">Рапорт о закреплении оружия</button>
 </div>
 
-<!-- СТРАНИЦА 1: ФОРМА -->
 <div class="page active" id="page-form">
   <div class="form-container">
     <h2 id="formTitle">Заполнение</h2>
     <div class="form-grid" id="formGrid"></div>
-
     <div class="photo-block">
       <h3>📎 Прикрепить фото</h3>
       <label class="photo-upload-btn" for="photoInput">＋ Выбрать файлы</label>
@@ -225,7 +222,6 @@
   </div>
 </div>
 
-<!-- СТРАНИЦА 2: ДОКУМЕНТ -->
 <div class="page" id="page-doc">
   <div class="doc-container">
     <div class="document" id="docPreview"></div>
@@ -247,6 +243,7 @@ const WEBHOOK_URL = "https://discord.com/api/webhooks/1560636556673552506/qkn1vr
 // ДОКУМЕНТЫ
 // ============================================================
 const DOCS = {
+  // ===== ППСП =====
   'pps-journal': {
     title: 'Бортовой журнал автопатруля', shortName: 'Бортовой журнал',
     fields: [
@@ -341,25 +338,8 @@ const DOCS = {
       <div class="signature">Подпись лица, у которого изъято: _______________<br>Подпись составителя: _______________</div>
     `
   },
-  'pps-rap': {
-    title: 'Рапорт об обнаружении признаков преступления', shortName: 'Рапорт о преступлении',
-    fields: [
-      { id: 'to', label: 'Кому (руководитель)', type: 'text', full: true },
-      { id: 'officer', label: 'От (должность, звание, ФИО)', type: 'text', full: true },
-      { id: 'date', label: 'Дата', type: 'date' }, { id: 'place', label: 'Место составления', type: 'text' },
-      { id: 'content', label: 'Содержание сообщения', type: 'textarea', full: true },
-      { id: 'article', label: 'Статья УК РФ', type: 'text', full: true }
-    ],
-    render: (d) => `
-      <div style="text-align:right; margin-bottom:24px;">${d.to||'Начальнику ОП № 2'}<br>от ${d.officer||'________________'}</div>
-      <h2>РАПОРТ</h2><div class="subtitle">об обнаружении признаков преступления</div>
-      <div class="line">«<span class="field">${d.date?d.date.split('-')[2]:'____'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> <span class="field">${d.date?d.date.split('-')[0]:'____'}</span> г. <span class="field">${d.place||'________________'}</span></div>
-      <div class="indent" style="margin-top:16px;">Докладываю в соответствии со ст. 143 УПК РФ о том, что:</div>
-      <div class="box" style="min-height:120px;">${(d.content||'').replace(/\n/g,'<br>')||'&nbsp;'}</div>
-      <div class="line" style="margin-top:10px;">Таким образом, в действиях усматриваются признаки состава преступления, предусмотренного <span class="field" style="min-width:200px;">${d.article||'________________'}</span>.</div>
-      <div class="signature">Подпись: _______________</div>
-    `
-  },
+
+  // ===== ДПС =====
   'dps-offense': {
     title: 'Протокол об административном правонарушении', shortName: 'Протокол об АП',
     fields: [
@@ -424,6 +404,8 @@ const DOCS = {
       <div class="signature">Подпись водителя: _______________<br>Подпись составителя: _______________</div>
     `
   },
+
+  // ===== ОУР =====
   'our-wanted': {
     title: 'Разыскная ориентировка', shortName: 'Ориентировка',
     fields: [
@@ -462,18 +444,280 @@ const DOCS = {
     title: 'Рапорт об обнаружении признаков преступления', shortName: 'Рапорт о преступлении',
     fields: [
       { id: 'to', label: 'Кому', type: 'text', full: true },
-      { id: 'officer', label: 'От (должность, звание, ФИО)', type: 'text', full: true },
-      { id: 'date', label: 'Дата', type: 'date' }, { id: 'place', label: 'Место составления', type: 'text' },
-      { id: 'content', label: 'Содержание сообщения', type: 'textarea', full: true },
-      { id: 'article', label: 'Статья УК РФ', type: 'text', full: true }
+      { id: 'from', label: 'От', type: 'text', full: true },
+      { id: 'rank', label: 'Должность / спец. звание', type: 'text', full: true },
+      { id: 'date', label: 'Дата', type: 'date' },
+      { id: 'place', label: 'Место составления', type: 'text', full: true },
+      { id: 'circumstances', label: 'Обстоятельства', type: 'textarea', full: true },
+      { id: 'location', label: 'Место происшествия', type: 'text', full: true },
+      { id: 'datetime', label: 'Дата и время происшествия', type: 'text', full: true },
+      { id: 'fio', label: 'Ф.И.О. причастного лица', type: 'text', full: true },
+      { id: 'birth', label: 'Дата рождения / возраст', type: 'text', full: true },
+      { id: 'other', label: 'Иные установочные данные', type: 'text', full: true },
+      { id: 'signs', label: 'Признаки преступления', type: 'textarea', full: true },
+      { id: 'article', label: 'Статья УК РФ', type: 'text' },
+      { id: 'materials', label: 'Имеющиеся сведения и материалы', type: 'textarea', full: true },
+      { id: 'measures', label: 'Принятые меры', type: 'textarea', full: true },
+      { id: 'apps', label: 'Приложения', type: 'textarea', full: true },
+      { id: 'officer', label: 'Сотрудник ОУР', type: 'text', full: true }
     ],
     render: (d) => `
-      <div style="text-align:right; margin-bottom:24px;">${d.to||'Начальнику ОУР'}<br>от ${d.officer||'________________'}</div>
-      <h2>РАПОРТ</h2><div class="subtitle">об обнаружении признаков преступления</div>
-      <div class="line">«<span class="field">${d.date?d.date.split('-')[2]:'____'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> <span class="field">${d.date?d.date.split('-')[0]:'____'}</span> г. <span class="field">${d.place||'________________'}</span></div>
-      <div class="indent" style="margin-top:16px;">Докладываю в соответствии со ст. 143 УПК РФ о том, что:</div>
-      <div class="box" style="min-height:120px;">${(d.content||'').replace(/\n/g,'<br>')||'&nbsp;'}</div>
-      <div class="line" style="margin-top:10px;">Признаки состава преступления, предусмотренного <span class="field" style="min-width:200px;">${d.article||'________________'}</span>.</div>
+      <div class="header-mvd">МВД РОССИИ</div>
+      <div class="header-mvd">ОТДЕЛ УГОЛОВНОГО РОЗЫСКА</div>
+      <h2>РАПОРТ</h2>
+      <div class="subtitle">об обнаружении признаков преступления</div>
+      <div class="line">Кому: <span class="field" style="min-width:300px;">${d.to||'________________'}</span></div>
+      <div class="line">От: <span class="field" style="min-width:300px;">${d.from||'________________'}</span></div>
+      <div class="line">Должность / специальное звание: <span class="field" style="min-width:250px;">${d.rank||'________________'}</span></div>
+      <div class="line">Дата: «<span class="field">${d.date?d.date.split('-')[2]:'__'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> 20<span class="field">${d.date?d.date.split('-')[0].slice(-2):'__'}</span> г.</div>
+      <div class="line">Место составления: <span class="field" style="min-width:300px;">${d.place||'________________'}</span></div>
+      <div class="indent" style="margin-top:16px;">Докладываю, что «<span class="field">${d.date?d.date.split('-')[2]:'__'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> 20<span class="field">${d.date?d.date.split('-')[0].slice(-2):'__'}</span> г. мною были обнаружены сведения, указывающие на признаки преступления.</div>
+      <div class="section-title">ОБСТОЯТЕЛЬСТВА:</div>
+      <div class="box" style="min-height:100px;">${d.circumstances||'&nbsp;'}</div>
+      <div class="section-title">МЕСТО ПРОИСШЕСТВИЯ:</div>
+      <div class="box">${d.location||'&nbsp;'}</div>
+      <div class="section-title">ДАТА И ВРЕМЯ ПРОИСШЕСТВИЯ:</div>
+      <div class="box">${d.datetime||'&nbsp;'}</div>
+      <div class="section-title">СВЕДЕНИЯ О ПРИЧАСТНЫХ ЛИЦАХ:</div>
+      <div class="line">Ф.И.О: <span class="field" style="min-width:300px;">${d.fio||'________________'}</span></div>
+      <div class="line">Дата рождения / возраст: <span class="field" style="min-width:250px;">${d.birth||'________________'}</span></div>
+      <div class="line">Иные установочные данные: <span class="field" style="min-width:250px;">${d.other||'________________'}</span></div>
+      <div class="section-title">ПРИЗНАКИ ПРЕСТУПЛЕНИЯ:</div>
+      <div class="box" style="min-height:80px;">${d.signs||'&nbsp;'}</div>
+      <div class="section-title">ПРЕДВАРИТЕЛЬНАЯ КВАЛИФИКАЦИЯ:</div>
+      <div class="line">Статья УК РФ: <span class="field" style="min-width:250px;">${d.article||'________________'}</span></div>
+      <div class="section-title">ИМЕЮЩИЕСЯ СВЕДЕНИЯ И МАТЕРИАЛЫ:</div>
+      <div class="box">${d.materials||'&nbsp;'}</div>
+      <div class="section-title">ПРИНЯТЫЕ МЕРЫ:</div>
+      <div class="box">${d.measures||'&nbsp;'}</div>
+      <div class="section-title">ПРИЛОЖЕНИЯ:</div>
+      <div class="box">${d.apps||'&nbsp;'}</div>
+      <div class="indent" style="margin-top:12px;">На основании изложенного прошу рассмотреть настоящий рапорт и принять решение в установленном порядке.</div>
+      <div class="line" style="margin-top:16px;">Сотрудник ОУР: <span class="field" style="min-width:250px;">${d.officer||'________________'}</span></div>
+      <div class="signature">Подпись: _______________</div>
+    `
+  },
+
+  // ===== ОУР — ДОПОЛНИТЕЛЬНЫЕ =====
+  'our-detain': {
+    title: 'Протокол задержания', shortName: 'Протокол задержания',
+    fields: [
+      { id: 'to', label: 'Кому', type: 'text', full: true },
+      { id: 'from', label: 'От', type: 'text', full: true },
+      { id: 'rank', label: 'Должность / спец. звание', type: 'text', full: true },
+      { id: 'date', label: 'Дата', type: 'date' },
+      { id: 'time', label: 'Время задержания', type: 'time' },
+      { id: 'place', label: 'Место задержания', type: 'text', full: true },
+      { id: 'fio', label: 'Ф.И.О. задержанного', type: 'text', full: true },
+      { id: 'birth', label: 'Дата рождения', type: 'text', full: true },
+      { id: 'other', label: 'Иные установочные данные', type: 'text', full: true },
+      { id: 'reason', label: 'Основание задержания', type: 'textarea', full: true },
+      { id: 'circumstances', label: 'Обстоятельства задержания', type: 'textarea', full: true },
+      { id: 'article', label: 'Статья / состав преступления', type: 'text', full: true },
+      { id: 'desc', label: 'Краткое описание произошедшего', type: 'textarea', full: true },
+      { id: 'found', label: 'Обнаружено / изъято', type: 'textarea', full: true },
+      { id: 'witnesses', label: 'Участники / свидетели', type: 'textarea', full: true },
+      { id: 'where', label: 'Куда доставлен', type: 'text', full: true },
+      { id: 'delivery', label: 'Дата / время доставления', type: 'text', full: true },
+      { id: 'extra', label: 'Дополнительная информация', type: 'textarea', full: true },
+      { id: 'officer', label: 'Сотрудник, осуществивший задержание', type: 'text', full: true }
+    ],
+    render: (d) => `
+      <div class="header-mvd">МВД РОССИИ</div>
+      <div class="header-mvd">ОТДЕЛ УГОЛОВНОГО РОЗЫСКА</div>
+      <h2>ПРОТОКОЛ ЗАДЕРЖАНИЯ</h2>
+      <div class="line">Кому: <span class="field" style="min-width:300px;">${d.to||'________________'}</span></div>
+      <div class="line">От: <span class="field" style="min-width:300px;">${d.from||'________________'}</span></div>
+      <div class="line">Должность / специальное звание: <span class="field" style="min-width:250px;">${d.rank||'________________'}</span></div>
+      <div class="line">Дата: «<span class="field">${d.date?d.date.split('-')[2]:'__'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> 20<span class="field">${d.date?d.date.split('-')[0].slice(-2):'__'}</span> г.</div>
+      <div class="line">Время задержания: <span class="field">${d.time||'__:__'}</span></div>
+      <div class="line">Место задержания: <span class="field" style="min-width:300px;">${d.place||'________________'}</span></div>
+      <div class="section-title">ЗАДЕРЖАННОЕ ЛИЦО</div>
+      <div class="line">Ф.И.О: <span class="field" style="min-width:300px;">${d.fio||'________________'}</span></div>
+      <div class="line">Дата рождения: <span class="field" style="min-width:200px;">${d.birth||'________________'}</span></div>
+      <div class="line">Иные установочные данные: <span class="field" style="min-width:250px;">${d.other||'________________'}</span></div>
+      <div class="section-title">ОСНОВАНИЕ ЗАДЕРЖАНИЯ</div>
+      <div class="box">${d.reason||'&nbsp;'}</div>
+      <div class="section-title">ОБСТОЯТЕЛЬСТВА ЗАДЕРЖАНИЯ</div>
+      <div class="box">${d.circumstances||'&nbsp;'}</div>
+      <div class="section-title">В СВЯЗИ С ЧЕМ ЗАДЕРЖАН</div>
+      <div class="line">Статья / состав преступления: <span class="field" style="min-width:200px;">${d.article||'________________'}</span></div>
+      <div class="line">Краткое описание произошедшего:</div>
+      <div class="box">${d.desc||'&nbsp;'}</div>
+      <div class="section-title">ОБНАРУЖЕНО / ИЗЪЯТО</div>
+      <div class="box">${d.found||'&nbsp;'}</div>
+      <div class="section-title">УЧАСТНИКИ / СВИДЕТЕЛИ</div>
+      <div class="box">${d.witnesses||'&nbsp;'}</div>
+      <div class="section-title">ДОСТАВЛЕНИЕ</div>
+      <div class="line">Куда доставлен: <span class="field" style="min-width:300px;">${d.where||'________________'}</span></div>
+      <div class="line">Дата / время доставления: <span class="field" style="min-width:250px;">${d.delivery||'________________'}</span></div>
+      <div class="section-title">ДОПОЛНИТЕЛЬНАЯ ИНФОРМАЦИЯ</div>
+      <div class="box">${d.extra||'&nbsp;'}</div>
+      <div class="line" style="margin-top:16px;">Сотрудник, осуществивший задержание: <span class="field" style="min-width:250px;">${d.officer||'________________'}</span></div>
+      <div class="signature">Подпись: _______________</div>
+    `
+  },
+  'our-orm': {
+    title: 'Рапорт о проведении ОРМ', shortName: 'Рапорт ОРМ',
+    fields: [
+      { id: 'to', label: 'Кому', type: 'text', full: true },
+      { id: 'from', label: 'От', type: 'text', full: true },
+      { id: 'rank', label: 'Должность / спец. звание', type: 'text', full: true },
+      { id: 'material', label: 'Материал №', type: 'text' },
+      { id: 'date', label: 'Дата составления', type: 'date' },
+      { id: 'orm_type', label: 'Вид ОРМ', type: 'text', full: true },
+      { id: 'basis', label: 'Основание проведения', type: 'textarea', full: true },
+      { id: 'date_orm', label: 'Дата проведения', type: 'text' },
+      { id: 'time_from', label: 'Время с', type: 'time' },
+      { id: 'time_to', label: 'Время до', type: 'time' },
+      { id: 'place', label: 'Место проведения', type: 'text', full: true },
+      { id: 'participants', label: 'Участники мероприятия', type: 'textarea', full: true },
+      { id: 'goal', label: 'Цель ОРМ', type: 'textarea', full: true },
+      { id: 'process', label: 'Ход проведения', type: 'textarea', full: true },
+      { id: 'results', label: 'Полученные сведения', type: 'textarea', full: true },
+      { id: 'other', label: 'Иные обстоятельства', type: 'textarea', full: true },
+      { id: 'apps', label: 'Приложения', type: 'textarea', full: true },
+      { id: 'officer', label: 'Ответственный сотрудник', type: 'text', full: true }
+    ],
+    render: (d) => `
+      <div class="header-mvd">МВД РОССИИ</div>
+      <div class="header-mvd">ОТДЕЛ УГОЛОВНОГО РОЗЫСКА</div>
+      <h2>РАПОРТ</h2>
+      <div class="subtitle">о проведении оперативно-розыскного мероприятия</div>
+      <div class="line">Кому: <span class="field" style="min-width:300px;">${d.to||'________________'}</span></div>
+      <div class="line">От: <span class="field" style="min-width:300px;">${d.from||'________________'}</span></div>
+      <div class="line">Должность / специальное звание: <span class="field" style="min-width:250px;">${d.rank||'________________'}</span></div>
+      <div class="line">Материал №: <span class="field" style="min-width:200px;">${d.material||'________________'}</span></div>
+      <div class="line">Дата составления: «<span class="field">${d.date?d.date.split('-')[2]:'__'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> 20<span class="field">${d.date?d.date.split('-')[0].slice(-2):'__'}</span> г.</div>
+      <div class="indent" style="margin-top:16px;">Докладываю, что в рамках материала № <span class="field">${d.material||'____'}</span> мною было проведено оперативно-розыскное мероприятие:</div>
+      <div class="line">Вид ОРМ: <span class="field" style="min-width:300px;">${d.orm_type||'________________'}</span></div>
+      <div class="section-title">Основание проведения:</div>
+      <div class="box">${d.basis||'&nbsp;'}</div>
+      <div class="line">Дата проведения: <span class="field" style="min-width:200px;">${d.date_orm||'________________'}</span></div>
+      <div class="line">Время: с <span class="field">${d.time_from||'__:__'}</span> до <span class="field">${d.time_to||'__:__'}</span></div>
+      <div class="line">Место проведения: <span class="field" style="min-width:300px;">${d.place||'________________'}</span></div>
+      <div class="section-title">Участники мероприятия:</div>
+      <div class="box">${d.participants||'&nbsp;'}</div>
+      <div class="section-title">ЦЕЛЬ ОРМ:</div>
+      <div class="box">${d.goal||'&nbsp;'}</div>
+      <div class="section-title">ХОД ПРОВЕДЕНИЯ:</div>
+      <div class="box">${d.process||'&nbsp;'}</div>
+      <div class="section-title">ПОЛУЧЕННЫЕ СВЕДЕНИЯ:</div>
+      <div class="box">${d.results||'&nbsp;'}</div>
+      <div class="section-title">ИНЫЕ ОБСТОЯТЕЛЬСТВА:</div>
+      <div class="box">${d.other||'&nbsp;'}</div>
+      <div class="section-title">ПРИЛОЖЕНИЯ:</div>
+      <div class="box">${d.apps||'&nbsp;'}</div>
+      <div class="line" style="margin-top:16px;">Ответственный сотрудник: <span class="field" style="min-width:250px;">${d.officer||'________________'}</span></div>
+      <div class="signature">Подпись: _______________</div>
+    `
+  },
+  'our-explain': {
+    title: 'Объяснительная', shortName: 'Объяснительная',
+    fields: [
+      { id: 'to', label: 'Кому', type: 'text', full: true },
+      { id: 'from', label: 'От', type: 'text', full: true },
+      { id: 'rank', label: 'Должность / спец. звание', type: 'text', full: true },
+      { id: 'date', label: 'Дата составления', type: 'date' },
+      { id: 'fio', label: 'Ф.И.О.', type: 'text', full: true },
+      { id: 'fact', label: 'По факту', type: 'textarea', full: true },
+      { id: 'circumstances', label: 'Обстоятельства', type: 'textarea', full: true },
+      { id: 'extra', label: 'Дополнительные сведения', type: 'textarea', full: true }
+    ],
+    render: (d) => `
+      <div class="header-mvd">МВД РОССИИ</div>
+      <div class="header-mvd">ОТДЕЛ УГОЛОВНОГО РОЗЫСКА</div>
+      <h2>ОБЪЯСНИТЕЛЬНАЯ</h2>
+      <div class="line">Кому: <span class="field" style="min-width:300px;">${d.to||'________________'}</span></div>
+      <div class="line">От: <span class="field" style="min-width:300px;">${d.from||'________________'}</span></div>
+      <div class="line">Должность / специальное звание: <span class="field" style="min-width:250px;">${d.rank||'________________'}</span></div>
+      <div class="line">Дата составления: «<span class="field">${d.date?d.date.split('-')[2]:'__'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> 20<span class="field">${d.date?d.date.split('-')[0].slice(-2):'__'}</span> г.</div>
+      <div class="indent" style="margin-top:16px;">Я, <span class="field" style="min-width:250px;">${d.fio||'________________'}</span>, даю настоящую объяснительную по факту:</div>
+      <div class="box">${d.fact||'&nbsp;'}</div>
+      <div class="section-title">ОБСТОЯТЕЛЬСТВА:</div>
+      <div class="box" style="min-height:100px;">${d.circumstances||'&nbsp;'}</div>
+      <div class="section-title">ДОПОЛНИТЕЛЬНЫЕ СВЕДЕНИЯ:</div>
+      <div class="box">${d.extra||'&nbsp;'}</div>
+      <div class="indent" style="margin-top:12px;">Настоящая объяснительная составлена мною лично, изложенные сведения соответствуют моему объяснению.</div>
+      <div class="signature">Подпись: _______________</div>
+    `
+  },
+  'our-request': {
+    title: 'Служебный запрос', shortName: 'Служебный запрос',
+    fields: [
+      { id: 'to', label: 'Кому', type: 'text', full: true },
+      { id: 'from', label: 'От', type: 'text', full: true },
+      { id: 'rank', label: 'Должность / спец. звание', type: 'text', full: true },
+      { id: 'out_num', label: 'Исходящий №', type: 'text' },
+      { id: 'date', label: 'Дата', type: 'date' },
+      { id: 'material', label: 'По материалу №', type: 'text' },
+      { id: 'info', label: 'Запрашиваемые сведения', type: 'textarea', full: true },
+      { id: 'basis', label: 'Основание запроса', type: 'textarea', full: true },
+      { id: 'docs', label: 'Необходимые документы / материалы', type: 'textarea', full: true },
+      { id: 'deadline', label: 'Срок предоставления', type: 'text' },
+      { id: 'method', label: 'Способ предоставления', type: 'text', full: true },
+      { id: 'extra', label: 'Дополнительная информация', type: 'textarea', full: true },
+      { id: 'officer', label: 'Сотрудник ОУР', type: 'text', full: true }
+    ],
+    render: (d) => `
+      <div class="header-mvd">МВД РОССИИ</div>
+      <div class="header-mvd">ОТДЕЛ УГОЛОВНОГО РОЗЫСКА</div>
+      <h2>СЛУЖЕБНЫЙ ЗАПРОС</h2>
+      <div class="line">Кому: <span class="field" style="min-width:300px;">${d.to||'________________'}</span></div>
+      <div class="line">От: <span class="field" style="min-width:300px;">${d.from||'________________'}</span></div>
+      <div class="line">Должность / специальное звание: <span class="field" style="min-width:250px;">${d.rank||'________________'}</span></div>
+      <div class="line">Исходящий №: <span class="field" style="min-width:150px;">${d.out_num||'________________'}</span></div>
+      <div class="line">Дата: «<span class="field">${d.date?d.date.split('-')[2]:'__'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> 20<span class="field">${d.date?d.date.split('-')[0].slice(-2):'__'}</span> г.</div>
+      <div class="line">По материалу №: <span class="field" style="min-width:200px;">${d.material||'________________'}</span></div>
+      <div class="indent" style="margin-top:16px;">В связи с проведением проверки / оперативно-розыскных мероприятий прошу предоставить следующую информацию:</div>
+      <div class="section-title">ЗАПРАШИВАЕМЫЕ СВЕДЕНИЯ:</div>
+      <div class="box" style="min-height:100px;">${d.info||'&nbsp;'}</div>
+      <div class="section-title">ОСНОВАНИЕ ЗАПРОСА:</div>
+      <div class="box">${d.basis||'&nbsp;'}</div>
+      <div class="section-title">НЕОБХОДИМЫЕ ДОКУМЕНТЫ / МАТЕРИАЛЫ:</div>
+      <div class="box">${d.docs||'&nbsp;'}</div>
+      <div class="line">Срок предоставления: <span class="field" style="min-width:200px;">${d.deadline||'________________'}</span></div>
+      <div class="line">Способ предоставления: <span class="field" style="min-width:250px;">${d.method||'________________'}</span></div>
+      <div class="section-title">ДОПОЛНИТЕЛЬНАЯ ИНФОРМАЦИЯ:</div>
+      <div class="box">${d.extra||'&nbsp;'}</div>
+      <div class="line" style="margin-top:16px;">Сотрудник ОУР: <span class="field" style="min-width:250px;">${d.officer||'________________'}</span></div>
+      <div class="signature">Подпись: _______________</div>
+    `
+  },
+  'our-weapon': {
+    title: 'Рапорт о закреплении оружия', shortName: 'Закреп оружия',
+    fields: [
+      { id: 'to', label: 'Кому', type: 'text', full: true },
+      { id: 'from', label: 'От', type: 'text', full: true },
+      { id: 'rank', label: 'Должность / спец. звание', type: 'text', full: true },
+      { id: 'date', label: 'Дата', type: 'date' },
+      { id: 'fio', label: 'Ф.И.О.', type: 'text', full: true },
+      { id: 'position', label: 'Должность', type: 'text', full: true },
+      { id: 'unit', label: 'Подразделение', type: 'text', full: true },
+      { id: 'weapon', label: 'Вид служебного оружия', type: 'text', full: true },
+      { id: 'serial', label: 'Учётный номер', type: 'text', full: true },
+      { id: 'basis', label: 'Основание для закрепления', type: 'textarea', full: true },
+      { id: 'extra', label: 'Дополнительные сведения', type: 'textarea', full: true }
+    ],
+    render: (d) => `
+      <div class="header-mvd">МВД РОССИИ</div>
+      <div class="header-mvd">ОТДЕЛ УГОЛОВНОГО РОЗЫСКА</div>
+      <h2>РАПОРТ</h2>
+      <div class="subtitle">о закреплении оружия</div>
+      <div class="line">Кому: <span class="field" style="min-width:300px;">${d.to||'________________'}</span></div>
+      <div class="line">От: <span class="field" style="min-width:300px;">${d.from||'________________'}</span></div>
+      <div class="line">Должность / специальное звание: <span class="field" style="min-width:250px;">${d.rank||'________________'}</span></div>
+      <div class="line">Дата: «<span class="field">${d.date?d.date.split('-')[2]:'__'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> 20<span class="field">${d.date?d.date.split('-')[0].slice(-2):'__'}</span> г.</div>
+      <div class="indent" style="margin-top:16px;">Докладываю, что в соответствии с установленным порядком прошу рассмотреть вопрос о закреплении за мной служебного оружия:</div>
+      <div class="line">Ф.И.О.: <span class="field" style="min-width:300px;">${d.fio||'________________'}</span></div>
+      <div class="line">Должность: <span class="field" style="min-width:250px;">${d.position||'________________'}</span></div>
+      <div class="line">Подразделение: <span class="field" style="min-width:250px;">${d.unit||'________________'}</span></div>
+      <div class="line">Вид служебного оружия: <span class="field" style="min-width:250px;">${d.weapon||'________________'}</span></div>
+      <div class="line">Учётный номер: <span class="field" style="min-width:200px;">${d.serial||'________________'}</span></div>
+      <div class="section-title">ОСНОВАНИЕ ДЛЯ ЗАКРЕПЛЕНИЯ:</div>
+      <div class="box">${d.basis||'&nbsp;'}</div>
+      <div class="section-title">ДОПОЛНИТЕЛЬНЫЕ СВЕДЕНИЯ:</div>
+      <div class="box">${d.extra||'&nbsp;'}</div>
       <div class="signature">Подпись: _______________</div>
     `
   }
@@ -502,6 +746,7 @@ function switchDoc(id) {
   document.getElementById('currentDocName').textContent = DOCS[id].shortName || DOCS[id].title;
   document.getElementById('dropdown').classList.remove('open');
   renderForm();
+  renderPreview();
 }
 
 function goToDoc() {
@@ -550,9 +795,8 @@ function renderPreview() {
   localStorage.setItem('doc_' + currentDoc, JSON.stringify(data));
 
   let html = doc.render(data);
-  // Вставляем фото, если есть
   if (photos.length > 0) {
-    html += `<div style="margin-top:20px; page-break-before: always;">
+    html += `<div style="margin-top:30px; border-top:1px dashed #999; padding-top:15px;">
       <div class="section-title">Приложение: фотоматериалы</div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">`;
     photos.forEach(p => {
@@ -606,15 +850,23 @@ function removePhoto(i) {
 }
 
 // ============================================================
-// ОТПРАВКА В DISCORD
+// ОТПРАВКА В DISCORD (PNG + PDF)
 // ============================================================
 async function sendToDiscord() {
   const btn = document.getElementById('discordBtn');
   btn.disabled = true;
-  btn.textContent = '⏳ Отправка...';
+  btn.textContent = '⏳ Генерация...';
 
   try {
     const element = document.getElementById('docPreview');
+
+    btn.textContent = '⏳ Генерация PNG...';
+    const canvas = await html2canvas(element, {
+      scale: 2, useCORS: true, backgroundColor: '#ffffff'
+    });
+    const pngBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+
+    btn.textContent = '⏳ Генерация PDF...';
     const pdfBlob = await html2pdf().from(element).set({
       margin: 10,
       filename: currentDoc + '.pdf',
@@ -623,34 +875,40 @@ async function sendToDiscord() {
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     }).outputPdf('blob');
 
+    btn.textContent = '⏳ Отправка...';
     const formData = new FormData();
-    formData.append('file', pdfBlob, DOCS[currentDoc].shortName + '.pdf');
+    const pngName = DOCS[currentDoc].shortName + '.png';
+    const pdfName = DOCS[currentDoc].shortName + '.pdf';
+    formData.append('files[0]', pngBlob, pngName);
+    formData.append('files[1]', pdfBlob, pdfName);
     formData.append('payload_json', JSON.stringify({
       content: `📄 **${DOCS[currentDoc].title}**\nОтправлено с сайта документооборота.`,
-      username: 'МВД Документооборот'
+      username: 'МВД Документооборот',
+      attachments: [
+        { id: 0, filename: pngName },
+        { id: 1, filename: pdfName }
+      ]
     }));
 
-    const response = await fetch(WEBHOOK_URL, {
-      method: 'POST',
-      body: formData
-    });
+    const response = await fetch(WEBHOOK_URL, { method: 'POST', body: formData });
 
     if (response.ok) {
       btn.textContent = '✅ Отправлено!';
-      setTimeout(() => { btn.textContent = '🤖 Отправить в Discord'; btn.disabled = false; }, 2000);
+      setTimeout(() => {
+        btn.textContent = '🤖 Отправить в Discord';
+        btn.disabled = false;
+      }, 2500);
     } else {
-      throw new Error('HTTP ' + response.status);
+      const text = await response.text();
+      throw new Error('HTTP ' + response.status + ': ' + text);
     }
   } catch (err) {
-    alert('Ошибка отправки: ' + err.message + '\n\nПроверь вебхук или попробуй ещё раз.');
+    alert('Ошибка отправки: ' + err.message);
     btn.textContent = '🤖 Отправить в Discord';
     btn.disabled = false;
   }
 }
 
-// ============================================================
-// ИНИЦИАЛИЗАЦИЯ
-// ============================================================
 renderForm();
 renderPreview();
 </script>
