@@ -7,57 +7,68 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: Arial, sans-serif;
-    background: #f0f0f0;
-    color: #222;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #0f0f1a;
+    color: #e0e0e0;
     display: flex;
     min-height: 100vh;
   }
 
-  /* ЛЕВОЕ МЕНЮ */
+  /* САЙДБАР */
   .sidebar {
-    width: 260px;
-    background: #1a1a2e;
-    color: #fff;
-    padding: 20px 0;
+    width: 280px;
+    background: #16162a;
+    padding: 24px 0;
     overflow-y: auto;
     flex-shrink: 0;
+    border-right: 1px solid #2a2a4a;
   }
-  .sidebar h1 {
-    font-size: 16px;
-    padding: 0 20px 15px;
-    border-bottom: 1px solid #333;
-    margin-bottom: 10px;
-    color: #ffd166;
+  .sidebar .logo {
+    padding: 0 24px 20px;
+    border-bottom: 1px solid #2a2a4a;
+    margin-bottom: 16px;
   }
-  .sidebar .section {
-    padding: 10px 20px;
-    font-size: 12px;
-    color: #888;
+  .sidebar .logo h1 {
+    font-size: 18px;
+    color: #f0c040;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .sidebar .logo p {
+    font-size: 11px;
+    color: #666;
+    margin-top: 4px;
+  }
+  .sidebar .section-label {
+    padding: 16px 24px 8px;
+    font-size: 11px;
+    color: #5a5a8a;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 10px;
+    letter-spacing: 1.5px;
+    font-weight: 600;
   }
   .sidebar button {
     display: block;
     width: 100%;
     text-align: left;
-    padding: 10px 20px;
+    padding: 12px 24px;
     background: none;
     border: none;
-    color: #ccc;
+    color: #b0b0c0;
     font-size: 14px;
     cursor: pointer;
-    transition: 0.2s;
+    transition: all 0.15s;
+    border-left: 3px solid transparent;
   }
   .sidebar button:hover {
-    background: #2a2a4e;
+    background: #1e1e3a;
     color: #fff;
   }
   .sidebar button.active {
-    background: #4a90e2;
-    color: #fff;
-    font-weight: bold;
+    background: #1e1e3a;
+    color: #f0c040;
+    border-left-color: #f0c040;
+    font-weight: 500;
   }
 
   /* ОСНОВНАЯ ЧАСТЬ */
@@ -68,165 +79,202 @@
     overflow: hidden;
   }
 
-  /* ФОРМА */
-  .form-area {
-    background: #2a2a3e;
-    padding: 20px;
+  /* ПАНЕЛЬ ФОРМЫ */
+  .form-panel {
+    background: #16162a;
+    padding: 24px 32px;
     overflow-y: auto;
-    max-height: 45vh;
-    border-bottom: 2px solid #1a1a2e;
+    max-height: 42vh;
+    border-bottom: 1px solid #2a2a4a;
   }
-  .form-area h2 {
+  .form-panel h2 {
     font-size: 16px;
-    color: #ffd166;
-    margin-bottom: 15px;
+    color: #f0c040;
+    margin-bottom: 20px;
+    font-weight: 600;
   }
   .form-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
   }
-  .form-group {
-    display: flex;
-    flex-direction: column;
-  }
+  .form-group { display: flex; flex-direction: column; }
+  .form-group.full { grid-column: 1 / -1; }
   .form-group label {
     font-size: 11px;
-    color: #aaa;
-    margin-bottom: 3px;
+    color: #7a7a9a;
+    margin-bottom: 5px;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
   }
   .form-group input, .form-group textarea, .form-group select {
-    padding: 7px 10px;
+    padding: 9px 12px;
     font-size: 13px;
-    border: 1px solid #444;
-    background: #1e1e2e;
-    color: #fff;
-    border-radius: 4px;
-    font-family: Arial, sans-serif;
+    border: 1px solid #2a2a4a;
+    background: #0f0f1a;
+    color: #e0e0e0;
+    border-radius: 6px;
+    font-family: inherit;
+    transition: border-color 0.15s;
+  }
+  .form-group input:focus, .form-group textarea:focus {
+    outline: none;
+    border-color: #f0c040;
   }
   .form-group textarea {
     resize: vertical;
-    min-height: 60px;
+    min-height: 70px;
   }
 
-  /* ПРЕДПРОСМОТР */
-  .preview-area {
+  /* ПАНЕЛЬ ПРЕДПРОСМОТРА */
+  .preview-panel {
     flex: 1;
-    padding: 20px;
+    padding: 32px;
     overflow-y: auto;
     display: flex;
     justify-content: center;
-    background: #e8e8e8;
+    background: #0a0a14;
   }
   .document {
     background: #fff;
     width: 210mm;
     min-height: 297mm;
-    padding: 20mm 15mm;
-    box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    font-size: 13pt;
+    padding: 20mm 18mm;
+    box-shadow: 0 0 40px rgba(0,0,0,0.5);
+    font-family: 'Times New Roman', 'Georgia', serif;
+    font-size: 12pt;
     line-height: 1.6;
     color: #000;
+    border-radius: 2px;
   }
   .document h2 {
     text-align: center;
     font-size: 15pt;
     font-weight: bold;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
   }
   .document .subtitle {
     text-align: center;
     font-size: 11pt;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
+    color: #333;
   }
   .document .field {
     border-bottom: 1px solid #000;
     display: inline-block;
     min-width: 80px;
-    padding: 0 2px;
+    padding: 0 4px;
+    min-height: 1.2em;
   }
-  .document .line {
-    margin: 6px 0;
-  }
+  .document .line { margin: 8px 0; }
   .document .section-title {
     font-weight: bold;
-    margin-top: 15px;
-    margin-bottom: 5px;
+    margin-top: 18px;
+    margin-bottom: 8px;
+    font-size: 12pt;
   }
-  .document .indent {
-    text-indent: 30px;
-  }
+  .document .indent { text-indent: 32px; }
   .document .signature {
     text-align: right;
-    margin-top: 30px;
+    margin-top: 40px;
   }
+  .document .box {
+    border: 1px solid #000;
+    padding: 10px;
+    min-height: 50px;
+    margin: 8px 0;
+    font-size: 11pt;
+  }
+  .document .small { font-size: 10pt; color: #333; }
 
   /* КНОПКИ */
   .actions {
-    padding: 15px 20px;
-    background: #1a1a2e;
+    padding: 16px 32px;
+    background: #16162a;
     display: flex;
-    gap: 10px;
+    gap: 12px;
+    border-top: 1px solid #2a2a4a;
   }
   .actions button {
-    padding: 10px 20px;
+    padding: 11px 24px;
     font-size: 14px;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 600;
+    font-family: inherit;
+    transition: all 0.15s;
   }
-  .btn-print { background: #4a90e2; color: #fff; }
-  .btn-clear { background: #444; color: #fff; }
+  .btn-print {
+    background: #f0c040;
+    color: #16162a;
+  }
+  .btn-print:hover { background: #e0b030; }
+  .btn-clear {
+    background: #2a2a4a;
+    color: #b0b0c0;
+  }
+  .btn-clear:hover { background: #3a3a5a; color: #fff; }
 
   @media (max-width: 900px) {
     body { flex-direction: column; }
-    .sidebar { width: 100%; max-height: 150px; display: flex; flex-wrap: wrap; }
-    .sidebar h1 { display: none; }
-    .sidebar .section { width: 100%; }
-    .sidebar button { width: auto; flex: 1; min-width: 120px; text-align: center; }
-    .document { width: 100%; padding: 15px; font-size: 12pt; }
+    .sidebar { width: 100%; max-height: 180px; display: flex; flex-wrap: wrap; padding: 12px; }
+    .sidebar .logo { width: 100%; padding: 0 0 10px; border-bottom: none; }
+    .sidebar .section-label { width: 100%; padding: 6px 0; }
+    .sidebar button { width: auto; flex: 1; min-width: 100px; text-align: center; padding: 10px; font-size: 12px; border-left: none; border-bottom: 3px solid transparent; }
+    .sidebar button.active { border-left: none; border-bottom-color: #f0c040; }
+    .form-panel { padding: 16px; max-height: none; }
+    .preview-panel { padding: 12px; }
+    .document { width: 100%; padding: 16px; font-size: 11pt; }
+    .actions { padding: 12px 16px; }
+    .actions button { flex: 1; padding: 10px; font-size: 13px; }
   }
 
   @media print {
-    body { background: #fff; }
-    .sidebar, .form-area, .actions { display: none !important; }
-    .preview-area { padding: 0; overflow: visible; }
-    .document { box-shadow: none; width: auto; min-height: auto; padding: 0; }
+    body { background: #fff; display: block; }
+    .sidebar, .form-panel, .actions { display: none !important; }
+    .preview-panel { padding: 0; display: block; overflow: visible; }
+    .document { box-shadow: none; width: auto; min-height: auto; padding: 15mm; border-radius: 0; }
   }
 </style>
 </head>
 <body>
 
-<!-- ЛЕВОЕ МЕНЮ -->
+<!-- САЙДБАР -->
 <div class="sidebar">
-  <h1>📋 Документооборот</h1>
+  <div class="logo">
+    <h1>📋 Документооборот</h1>
+    <p>МВД · Рекомендуемые образцы</p>
+  </div>
 
-  <div class="section">ППСП</div>
-  <button class="dept-btn active" data-dept="pps" onclick="switchDept('pps')">Бортовой журнал</button>
-  <button class="dept-btn" data-dept="pps-rap" onclick="switchDept('pps-rap')">Рапорт о вступлении</button>
-  <button class="dept-btn" data-dept="pps-prot" onclick="switchDept('pps-prot')">Протокол задержания</button>
+  <div class="section-label">ППСП</div>
+  <button class="nav-btn active" data-doc="pps-journal" onclick="switchDoc('pps-journal')">Бортовой журнал</button>
+  <button class="nav-btn" data-doc="pps-admin" onclick="switchDoc('pps-admin')">Протокол задержания</button>
+  <button class="nav-btn" data-doc="pps-search" onclick="switchDoc('pps-search')">Протокол досмотра</button>
+  <button class="nav-btn" data-doc="pps-seize" onclick="switchDoc('pps-seize')">Протокол изъятия</button>
 
-  <div class="section">ДПС</div>
-  <button class="dept-btn" data-dept="dps-rap" onclick="switchDept('dps-rap')">Рапорт о ДТП</button>
-  <button class="dept-btn" data-dept="dps-prot" onclick="switchDept('dps-prot')">Протокол АП</button>
+  <div class="section-label">ДПС</div>
+  <button class="nav-btn" data-doc="dps-offense" onclick="switchDoc('dps-offense')">Протокол об АП</button>
+  <button class="nav-btn" data-doc="dps-scheme" onclick="switchDoc('dps-scheme')">Схема места АП</button>
+  <button class="nav-btn" data-doc="dps-remove" onclick="switchDoc('dps-remove')">Отстранение от ТС</button>
 
-  <div class="section">ОУР</div>
-  <button class="dept-btn" data-dept="our-orient" onclick="switchDept('our-orient')">Ориентировка</button>
-  <button class="dept-btn" data-dept="our-rap" onclick="switchDept('our-rap')">Рапорт о работе</button>
+  <div class="section-label">ОУР</div>
+  <button class="nav-btn" data-doc="our-wanted" onclick="switchDoc('our-wanted')">Разыскная ориентировка</button>
+  <button class="nav-btn" data-doc="our-report" onclick="switchDoc('our-report')">Рапорт о работе</button>
 </div>
 
 <!-- ОСНОВНАЯ ЧАСТЬ -->
 <div class="main">
-  <div class="form-area" id="formArea">
-    <!-- Форма генерируется JS -->
+  <div class="form-panel" id="formPanel">
+    <h2 id="formTitle">Заполнение</h2>
+    <div class="form-grid" id="formGrid"></div>
   </div>
 
-  <div class="preview-area">
-    <div class="document" id="documentPreview">
-      <!-- Документ генерируется JS -->
-    </div>
+  <div class="preview-panel">
+    <div class="document" id="docPreview"></div>
   </div>
 
   <div class="actions">
@@ -237,319 +285,276 @@
 
 <script>
 // ============================================================
-// ДАННЫЕ ДОКУМЕНТОВ
+// ДОКУМЕНТЫ (по приказу МВД № 264 от 02.05.2023)
 // ============================================================
 
-const documents = {
-  // --- ППСП ---
-  'pps': {
+const DOCS = {
+  // ===== ППСП =====
+  'pps-journal': {
     title: 'Бортовой журнал автопатруля',
-    subtitle: 'Отдельная рота патрульно-постовой службы полиции',
     fields: [
       { id: 'date', label: 'Дата', type: 'date' },
       { id: 'time_start', label: 'Начало службы', type: 'time' },
       { id: 'time_end', label: 'Окончание', type: 'time' },
-      { id: 'senior', label: 'Старший наряда (ФИО, звание)', type: 'text' },
-      { id: 'officer', label: 'Полицейский (ФИО, звание)', type: 'text' },
-      { id: 'driver', label: 'Полицейский-водитель (ФИО, звание)', type: 'text' },
+      { id: 'senior', label: 'Старший наряда (ФИО, звание)', type: 'text', full: true },
+      { id: 'officer', label: 'Полицейский (ФИО, звание)', type: 'text', full: true },
+      { id: 'driver', label: 'Полицейский-водитель (ФИО, звание)', type: 'text', full: true },
       { id: 'car', label: 'Автомобиль (марка)', type: 'text' },
       { id: 'plate', label: 'Гос. номер', type: 'text' },
-      { id: 'exits', label: 'Выезды (каждый через | )', type: 'textarea', placeholder: '№1; код; время получения; время прибытия; адрес; фабула; результат; время убытия' },
-      { id: 'notes', label: 'Примечания', type: 'textarea' }
+      { id: 'notes', label: 'Примечания', type: 'textarea', full: true }
     ],
-    preview: (data) => `
+    render: (d) => `
       <h2>Бортовой журнал автопатруля</h2>
       <div class="subtitle">Отдельная рота патрульно-постовой службы полиции</div>
-      <div class="line">Начат: <span class="field">${data.time_start || '____'}</span> &nbsp; Окончен: <span class="field">${data.time_end || '____'}</span></div>
-      <div class="line">«<span class="field">${data.date ? data.date.split('-')[2] : '____'}</span>» <span class="field">${data.date ? data.date.split('-')[1] : '______'}</span> <span class="field">${data.date ? data.date.split('-')[0] : '____'}</span> г.</div>
+      <div class="line">Начат: <span class="field">${d.time_start||'____'}</span> &nbsp;&nbsp; Окончен: <span class="field">${d.time_end||'____'}</span></div>
+      <div class="line">«<span class="field">${d.date?d.date.split('-')[2]:'____'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> <span class="field">${d.date?d.date.split('-')[0]:'____'}</span> г.</div>
       <div class="section-title">Наряд в составе:</div>
-      <div class="line">Старший: <span class="field" style="min-width:300px;">${data.senior || '________________'}</span></div>
-      <div class="line">Полицейский: <span class="field" style="min-width:300px;">${data.officer || '________________'}</span></div>
-      <div class="line">Полицейский-водитель: <span class="field" style="min-width:300px;">${data.driver || '________________'}</span></div>
-      <div class="line">Автомобиль: <span class="field" style="min-width:150px;">${data.car || '________'}</span>, знак: <span class="field" style="min-width:100px;">${data.plate || '______'}</span></div>
-      <div class="section-title">Выезды наряда:</div>
-      ${parseExits(data.exits)}
+      <div class="line">Старший: <span class="field" style="min-width:300px;">${d.senior||'________________'}</span></div>
+      <div class="line">Полицейский: <span class="field" style="min-width:300px;">${d.officer||'________________'}</span></div>
+      <div class="line">Полицейский-водитель: <span class="field" style="min-width:300px;">${d.driver||'________________'}</span></div>
+      <div class="line">Автомобиль: <span class="field" style="min-width:160px;">${d.car||'________'}</span>, знак: <span class="field" style="min-width:100px;">${d.plate||'______'}</span></div>
       <div class="section-title">Примечания:</div>
-      <div style="border:1px solid #000; padding:8px; min-height:40px;">${(data.notes||'').replace(/\\n/g,'<br>') || '&nbsp;'}</div>
+      <div class="box">${(d.notes||'').replace(/\\n/g,'<br>')||'&nbsp;'}</div>
     `
   },
 
-  'pps-rap': {
-    title: 'Рапорт о вступлении в ППСП',
-    subtitle: '',
-    fields: [
-      { id: 'rank', label: 'Звание', type: 'text' },
-      { id: 'name', label: 'ФИО', type: 'text' },
-      { id: 'to', label: 'Кому (должность, звание, ФИО)', type: 'text' },
-      { id: 'reason', label: 'Причина / цель', type: 'textarea' }
-    ],
-    preview: (data) => `
-      <div style="text-align:right; margin-bottom:20px;">
-        Начальнику ППСП<br>
-        ${data.to || '________________________'}<br>
-        от ${data.rank || '____'} ${data.name || '________________'}
-      </div>
-      <h2>РАПОРТ</h2>
-      <div class="indent">
-        Я, ${data.rank || '____'} ${data.name || '________________'}, прошу рассмотреть мою кандидатуру на вступление в ряды отдельного батальона патрульно-постовой службы полиции.
-      </div>
-      <div class="indent" style="margin-top:10px;">
-        ${data.reason || 'Причина не указана.'}
-      </div>
-      <div class="signature">
-        Дата: «____» ______________ 20___ г.<br><br>
-        Подпись: _______________
-      </div>
-    `
-  },
-
-  'pps-prot': {
+  'pps-admin': {
     title: 'Протокол об административном задержании',
-    subtitle: '',
     fields: [
       { id: 'date', label: 'Дата', type: 'date' },
-      { id: 'place', label: 'Место составления', type: 'text' },
-      { id: 'officer', label: 'Кто составил (должность, ФИО)', type: 'text' },
-      { id: 'detainee', label: 'Задержанный (ФИО, год рождения)', type: 'text' },
-      { id: 'reason', label: 'Основание задержания', type: 'textarea' },
-      { id: 'witnesses', label: 'Понятые', type: 'text' }
+      { id: 'time', label: 'Время', type: 'time' },
+      { id: 'place', label: 'Место составления', type: 'text', full: true },
+      { id: 'officer', label: 'Кто составил (должность, звание, ФИО)', type: 'text', full: true },
+      { id: 'detainee', label: 'Задержанный (ФИО)', type: 'text', full: true },
+      { id: 'birth', label: 'Дата и место рождения', type: 'text', full: true },
+      { id: 'address', label: 'Место жительства', type: 'text', full: true },
+      { id: 'reason', label: 'Основание задержания', type: 'textarea', full: true },
+      { id: 'witnesses', label: 'Понятые (ФИО, адрес)', type: 'textarea', full: true }
     ],
-    preview: (data) => `
+    render: (d) => `
       <h2>ПРОТОКОЛ</h2>
       <div class="subtitle">об административном задержании</div>
-      <div class="line">«<span class="field">${data.date ? data.date.split('-')[2] : '____'}</span>» <span class="field">${data.date ? data.date.split('-')[1] : '______'}</span> <span class="field">${data.date ? data.date.split('-')[0] : '____'}</span> г.</div>
-      <div class="line">Место составления: <span class="field" style="min-width:200px;">${data.place || '________________'}</span></div>
-      <div class="indent" style="margin-top:15px;">
-        Я, <span class="field" style="min-width:250px;">${data.officer || '________________'}</span>, составил настоящий протокол о том, что гражданин(ка)
-        <span class="field" style="min-width:250px;">${data.detainee || '________________'}</span>
-        был(а) задержан(а).
+      <div class="line">«<span class="field">${d.date?d.date.split('-')[2]:'____'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> <span class="field">${d.date?d.date.split('-')[0]:'____'}</span> г. <span class="field">${d.time||'__:__'}</span></div>
+      <div class="line">Место составления: <span class="field" style="min-width:300px;">${d.place||'________________'}</span></div>
+      <div class="indent" style="margin-top:16px;">
+        Я, <span class="field" style="min-width:300px;">${d.officer||'________________'}</span>, составил настоящий протокол об административном задержании гражданина(ки)
+        <span class="field" style="min-width:250px;">${d.detainee||'________________'}</span>,
+        <span class="field" style="min-width:200px;">${d.birth||'________________'}</span>,
+        место жительства: <span class="field" style="min-width:250px;">${d.address||'________________'}</span>
       </div>
       <div class="section-title">Основание задержания:</div>
-      <div style="border:1px solid #000; padding:8px; min-height:40px;">${data.reason || '&nbsp;'}</div>
-      <div class="line" style="margin-top:10px;">Понятые: <span class="field" style="min-width:200px;">${data.witnesses || '________________'}</span></div>
+      <div class="box">${d.reason||'&nbsp;'}</div>
+      <div class="section-title">Понятые:</div>
+      <div class="box">${d.witnesses||'&nbsp;'}</div>
       <div class="signature">
-        Подпись сотрудника: _______________<br>
-        Подпись задержанного: _______________
+        Подпись задержанного: _______________<br>
+        Подпись составителя: _______________
       </div>
     `
   },
 
-  // --- ДПС ---
-  'dps-rap': {
-    title: 'Рапорт о ДТП',
-    subtitle: '',
-    fields: [
-      { id: 'to', label: 'Кому (должность, звание)', type: 'text' },
-      { id: 'officer', label: 'От (должность, звание, ФИО)', type: 'text' },
-      { id: 'date', label: 'Дата ДТП', type: 'date' },
-      { id: 'time', label: 'Время', type: 'time' },
-      { id: 'place', label: 'Место ДТП', type: 'text' },
-      { id: 'cars', label: 'Участники (марки, номера)', type: 'textarea' },
-      { id: 'desc', label: 'Обстоятельства', type: 'textarea' }
-    ],
-    preview: (data) => `
-      <div style="text-align:right; margin-bottom:20px;">
-        ${data.to || 'Начальнику ОГИБДД'}<br>
-        от ${data.officer || '________________'}
-      </div>
-      <h2>РАПОРТ</h2>
-      <div class="indent">
-        Докладываю Вам, что <span class="field">${data.date || '____'}</span> в <span class="field">${data.time || '____'}</span>
-        по адресу <span class="field" style="min-width:200px;">${data.place || '________________'}</span>
-        произошло дорожно-транспортное происшествие.
-      </div>
-      <div class="section-title">Участники:</div>
-      <div style="border:1px solid #000; padding:8px; min-height:40px;">${data.cars || '&nbsp;'}</div>
-      <div class="section-title">Обстоятельства:</div>
-      <div style="border:1px solid #000; padding:8px; min-height:60px;">${data.desc || '&nbsp;'}</div>
-      <div class="signature">
-        Дата: «____» ______________ 20___ г.<br><br>
-        Подпись: _______________
-      </div>
-    `
-  },
-
-  'dps-prot': {
-    title: 'Протокол об административном правонарушении',
-    subtitle: '',
+  'pps-search': {
+    title: 'Протокол о личном досмотре',
     fields: [
       { id: 'date', label: 'Дата', type: 'date' },
-      { id: 'place', label: 'Место составления', type: 'text' },
-      { id: 'officer', label: 'Кто составил', type: 'text' },
-      { id: 'offender', label: 'Нарушитель (ФИО, адрес)', type: 'text' },
-      { id: 'article', label: 'Статья КоАП', type: 'text' },
-      { id: 'desc', label: 'Суть нарушения', type: 'textarea' },
-      { id: 'witnesses', label: 'Свидетели / понятые', type: 'text' }
+      { id: 'time', label: 'Время', type: 'time' },
+      { id: 'place', label: 'Место составления', type: 'text', full: true },
+      { id: 'officer', label: 'Кто составил', type: 'text', full: true },
+      { id: 'person', label: 'Досматриваемый (ФИО)', type: 'text', full: true },
+      { id: 'address', label: 'Место жительства', type: 'text', full: true },
+      { id: 'reason', label: 'Основание досмотра', type: 'textarea', full: true },
+      { id: 'found', label: 'Обнаружено при досмотре', type: 'textarea', full: true },
+      { id: 'witnesses', label: 'Понятые (ФИО, адрес)', type: 'textarea', full: true }
     ],
-    preview: (data) => `
+    render: (d) => `
       <h2>ПРОТОКОЛ</h2>
-      <div class="subtitle">об административном правонарушении</div>
-      <div class="line">«<span class="field">${data.date ? data.date.split('-')[2] : '____'}</span>» <span class="field">${data.date ? data.date.split('-')[1] : '______'}</span> <span class="field">${data.date ? data.date.split('-')[0] : '____'}</span> г.</div>
-      <div class="line">Место: <span class="field" style="min-width:200px;">${data.place || '________________'}</span></div>
-      <div class="indent" style="margin-top:15px;">
-        Я, <span class="field" style="min-width:250px;">${data.officer || '________________'}</span>, составил настоящий протокол о том, что гражданин(ка)
-        <span class="field" style="min-width:250px;">${data.offender || '________________'}</span>
-        совершил(а) административное правонарушение, предусмотренное ст. <span class="field">${data.article || '____'}</span> КоАП РФ.
+      <div class="subtitle">о личном досмотре, досмотре вещей</div>
+      <div class="line">«<span class="field">${d.date?d.date.split('-')[2]:'____'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> <span class="field">${d.date?d.date.split('-')[0]:'____'}</span> г. <span class="field">${d.time||'__:__'}</span></div>
+      <div class="line">Место: <span class="field" style="min-width:300px;">${d.place||'________________'}</span></div>
+      <div class="indent" style="margin-top:16px;">
+        Я, <span class="field" style="min-width:300px;">${d.officer||'________________'}</span>, осуществил личный досмотр гражданина(ки)
+        <span class="field" style="min-width:250px;">${d.person||'________________'}</span>,
+        проживающего(ей): <span class="field" style="min-width:250px;">${d.address||'________________'}</span>
       </div>
-      <div class="section-title">Суть нарушения:</div>
-      <div style="border:1px solid #000; padding:8px; min-height:60px;">${data.desc || '&nbsp;'}</div>
-      <div class="line" style="margin-top:10px;">Свидетели: <span class="field" style="min-width:200px;">${data.witnesses || '________________'}</span></div>
+      <div class="section-title">Основание досмотра:</div>
+      <div class="box">${d.reason||'&nbsp;'}</div>
+      <div class="section-title">Обнаружено:</div>
+      <div class="box">${d.found||'&nbsp;'}</div>
+      <div class="section-title">Понятые:</div>
+      <div class="box">${d.witnesses||'&nbsp;'}</div>
       <div class="signature">
-        Подпись сотрудника: _______________<br>
-        Подпись нарушителя: _______________
+        Подпись досматриваемого: _______________<br>
+        Подпись составителя: _______________
       </div>
     `
   },
 
-  // --- ОУР ---
-  'our-orient': {
-    title: 'Ориентировка',
-    subtitle: 'Разыскная ориентировка',
+  'pps-seize': {
+    title: 'Протокол об изъятии вещей и документов',
     fields: [
-      { id: 'fio', label: 'ФИО разыскиваемого', type: 'text' },
-      { id: 'birth', label: 'Год рождения', type: 'text' },
-      { id: 'reason', label: 'Кем разыскивается / по какой статье', type: 'text' },
-      { id: 'appearance', label: 'Приметы (внешность)', type: 'textarea' },
-      { id: 'clothes', label: 'Особые приметы / одежда', type: 'textarea' }
+      { id: 'date', label: 'Дата', type: 'date' },
+      { id: 'time', label: 'Время', type: 'time' },
+      { id: 'place', label: 'Место составления', type: 'text', full: true },
+      { id: 'officer', label: 'Кто составил', type: 'text', full: true },
+      { id: 'person', label: 'У кого изъято (ФИО)', type: 'text', full: true },
+      { id: 'items', label: 'Что изъято', type: 'textarea', full: true },
+      { id: 'reason', label: 'Основание изъятия', type: 'textarea', full: true },
+      { id: 'witnesses', label: 'Понятые', type: 'textarea', full: true }
     ],
-    preview: (data) => `
-      <h2>РАЗЫСКНАЯ ОРИЕНТИРОВКА</h2>
-      <div class="indent" style="margin-top:15px;">
-        Разыскивается <span class="field" style="min-width:200px;">${data.fio || '________________'}</span>,
-        <span class="field" style="min-width:80px;">${data.birth || '____'}</span> года рождения.
+    render: (d) => `
+      <h2>ПРОТОКОЛ</h2>
+      <div class="subtitle">об изъятии вещей и документов</div>
+      <div class="line">«<span class="field">${d.date?d.date.split('-')[2]:'____'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> <span class="field">${d.date?d.date.split('-')[0]:'____'}</span> г. <span class="field">${d.time||'__:__'}</span></div>
+      <div class="line">Место: <span class="field" style="min-width:300px;">${d.place||'________________'}</span></div>
+      <div class="indent" style="margin-top:16px;">
+        Я, <span class="field" style="min-width:300px;">${d.officer||'________________'}</span>, составил настоящий протокол о том, что у гражданина(ки)
+        <span class="field" style="min-width:250px;">${d.person||'________________'}</span>
+      </div>
+      <div class="section-title">Изъято:</div>
+      <div class="box">${d.items||'&nbsp;'}</div>
+      <div class="section-title">Основание:</div>
+      <div class="box">${d.reason||'&nbsp;'}</div>
+      <div class="section-title">Понятые:</div>
+      <div class="box">${d.witnesses||'&nbsp;'}</div>
+      <div class="signature">
+        Подпись лица, у которого изъято: _______________<br>
+        Подпись составителя: _______________
+      </div>
+    `
+  },
+
+  // ===== ДПС =====
+  'dps-offense': {
+    title: 'Протокол об административном правонарушении',
+    fields: [
+      { id: 'date', label: 'Дата', type: 'date' },
+      { id: 'time', label: 'Время', type: 'time' },
+      { id: 'place', label: 'Место составления', type: 'text', full: true },
+      { id: 'officer', label: 'Кто составил', type: 'text', full: true },
+      { id: 'offender', label: 'Нарушитель (ФИО, дата рождения)', type: 'text', full: true },
+      { id: 'address', label: 'Место жительства', type: 'text', full: true },
+      { id: 'article', label: 'Статья КоАП', type: 'text' },
+      { id: 'vehicle', label: 'ТС (марка, гос. номер)', type: 'text' },
+      { id: 'desc', label: 'Суть нарушения', type: 'textarea', full: true },
+      { id: 'witnesses', label: 'Свидетели / потерпевшие', type: 'textarea', full: true }
+    ],
+    render: (d) => `
+      <h2>ПРОТОКОЛ</h2>
+      <div class="subtitle">об административном правонарушении</div>
+      <div class="line">«<span class="field">${d.date?d.date.split('-')[2]:'____'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> <span class="field">${d.date?d.date.split('-')[0]:'____'}</span> г. <span class="field">${d.time||'__:__'}</span></div>
+      <div class="line">Место: <span class="field" style="min-width:300px;">${d.place||'________________'}</span></div>
+      <div class="indent" style="margin-top:16px;">
+        Я, <span class="field" style="min-width:300px;">${d.officer||'________________'}</span>, составил настоящий протокол о том, что гражданин(ка)
+        <span class="field" style="min-width:250px;">${d.offender||'________________'}</span>,
+        проживающий(ая): <span class="field" style="min-width:250px;">${d.address||'________________'}</span>
       </div>
       <div class="line" style="margin-top:10px;">
-        <strong>Кем разыскивается:</strong> <span class="field" style="min-width:250px;">${data.reason || '________________'}</span>
+        управляя транспортным средством: <span class="field" style="min-width:250px;">${d.vehicle||'________________'}</span>,
+        совершил(а) нарушение, предусмотренное ст. <span class="field">${d.article||'____'}</span> КоАП РФ.
+      </div>
+      <div class="section-title">Суть нарушения:</div>
+      <div class="box">${d.desc||'&nbsp;'}</div>
+      <div class="section-title">Свидетели / потерпевшие:</div>
+      <div class="box">${d.witnesses||'&nbsp;'}</div>
+      <div class="signature">
+        Подпись нарушителя: _______________<br>
+        Подпись составителя: _______________
+      </div>
+    `
+  },
+
+  'dps-scheme': {
+    title: 'Схема места совершения АП',
+    fields: [
+      { id: 'date', label: 'Дата', type: 'date' },
+      { id: 'time', label: 'Время', type: 'time' },
+      { id: 'place', label: 'Место', type: 'text', full: true },
+      { id: 'officer', label: 'Кто составил', type: 'text', full: true },
+      { id: 'desc', label: 'Описание схемы', type: 'textarea', full: true },
+      { id: 'witnesses', label: 'Понятые', type: 'textarea', full: true }
+    ],
+    render: (d) => `
+      <h2>СХЕМА</h2>
+      <div class="subtitle">места совершения административного правонарушения</div>
+      <div class="line">«<span class="field">${d.date?d.date.split('-')[2]:'____'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> <span class="field">${d.date?d.date.split('-')[0]:'____'}</span> г. <span class="field">${d.time||'__:__'}</span></div>
+      <div class="line">Место: <span class="field" style="min-width:300px;">${d.place||'________________'}</span></div>
+      <div class="line" style="margin-top:16px;">Составил: <span class="field" style="min-width:300px;">${d.officer||'________________'}</span></div>
+      <div class="section-title">Описание схемы:</div>
+      <div class="box" style="min-height:120px;">${d.desc||'&nbsp;'}</div>
+      <div class="section-title">Понятые:</div>
+      <div class="box">${d.witnesses||'&nbsp;'}</div>
+      <div class="signature">
+        Подпись составителя: _______________
+      </div>
+    `
+  },
+
+  'dps-remove': {
+    title: 'Протокол об отстранении от управления ТС',
+    fields: [
+      { id: 'date', label: 'Дата', type: 'date' },
+      { id: 'time', label: 'Время', type: 'time' },
+      { id: 'place', label: 'Место составления', type: 'text', full: true },
+      { id: 'officer', label: 'Кто составил', type: 'text', full: true },
+      { id: 'driver', label: 'Водитель (ФИО)', type: 'text', full: true },
+      { id: 'vehicle', label: 'ТС (марка, гос. номер)', type: 'text', full: true },
+      { id: 'reason', label: 'Основание отстранения', type: 'textarea', full: true },
+      { id: 'witnesses', label: 'Понятые', type: 'textarea', full: true }
+    ],
+    render: (d) => `
+      <h2>ПРОТОКОЛ</h2>
+      <div class="subtitle">об отстранении от управления транспортным средством</div>
+      <div class="line">«<span class="field">${d.date?d.date.split('-')[2]:'____'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> <span class="field">${d.date?d.date.split('-')[0]:'____'}</span> г. <span class="field">${d.time||'__:__'}</span></div>
+      <div class="line">Место: <span class="field" style="min-width:300px;">${d.place||'________________'}</span></div>
+      <div class="indent" style="margin-top:16px;">
+        Я, <span class="field" style="min-width:300px;">${d.officer||'________________'}</span>, составил настоящий протокол об отстранении от управления транспортным средством гражданина(ки)
+        <span class="field" style="min-width:250px;">${d.driver||'________________'}</span>,
+        управлявшего ТС: <span class="field" style="min-width:250px;">${d.vehicle||'________________'}</span>
+      </div>
+      <div class="section-title">Основание отстранения:</div>
+      <div class="box">${d.reason||'&nbsp;'}</div>
+      <div class="section-title">Понятые:</div>
+      <div class="box">${d.witnesses||'&nbsp;'}</div>
+      <div class="signature">
+        Подпись водителя: _______________<br>
+        Подпись составителя: _______________
+      </div>
+    `
+  },
+
+  // ===== ОУР =====
+  'our-wanted': {
+    title: 'Разыскная ориентировка',
+    fields: [
+      { id: 'fio', label: 'ФИО разыскиваемого', type: 'text', full: true },
+      { id: 'birth', label: 'Год рождения', type: 'text' },
+      { id: 'reason', label: 'Кем разыскивается', type: 'text', full: true },
+      { id: 'appearance', label: 'Приметы', type: 'textarea', full: true },
+      { id: 'clothes', label: 'Особые приметы / одежда', type: 'textarea', full: true }
+    ],
+    render: (d) => `
+      <h2>РАЗЫСКНАЯ ОРИЕНТИРОВКА</h2>
+      <div class="indent" style="margin-top:16px;">
+        Разыскивается <span class="field" style="min-width:250px;">${d.fio||'________________'}</span>,
+        <span class="field" style="min-width:80px;">${d.birth||'____'}</span> года рождения.
+      </div>
+      <div class="line" style="margin-top:12px;">
+        <strong>Кем разыскивается:</strong> <span class="field" style="min-width:250px;">${d.reason||'________________'}</span>
       </div>
       <div class="section-title">Приметы:</div>
-      <div style="border:1px solid #000; padding:8px; min-height:60px;">${data.appearance || '&nbsp;'}</div>
+      <div class="box">${d.appearance||'&nbsp;'}</div>
       <div class="section-title">Особые приметы / одежда:</div>
-      <div style="border:1px solid #000; padding:8px; min-height:40px;">${data.clothes || '&nbsp;'}</div>
+      <div class="box">${d.clothes||'&nbsp;'}</div>
       <div class="signature">
-        Дата: «____» ______________ 20___ г.<br><br>
         Составил: _______________
       </div>
     `
   },
 
-  'our-rap': {
+  'our-report': {
     title: 'Рапорт о проделанной работе',
-    subtitle: '',
     fields: [
-      { id: 'to', label: 'Кому (должность, звание)', type: 'text' },
-      { id: 'officer', label: 'От (должность, звание, ФИО)', type: 'text' },
+      { id: 'to', label: 'Кому (должность, звание)', type: 'text', full: true },
+      { id: 'officer', label: 'От (должность, звание, ФИО)', type: 'text', full: true },
       { id: 'period', label: 'Период', type: 'text' },
-      { id: 'work', label: 'Проделанная работа', type: 'textarea' }
-    ],
-    preview: (data) => `
-      <div style="text-align:right; margin-bottom:20px;">
-        ${data.to || 'Начальнику ОУР'}<br>
-        от ${data.officer || '________________'}
-      </div>
-      <h2>РАПОРТ</h2>
-      <div class="indent">
-        Докладываю Вам, что за период <span class="field">${data.period || '________________'}</span> мною была проделана следующая работа:
-      </div>
-      <div style="border:1px solid #000; padding:8px; min-height:120px; margin-top:10px;">${data.work || '&nbsp;'}</div>
-      <div class="signature">
-        Дата: «____» ______________ 20___ г.<br><br>
-        Подпись: _______________
-      </div>
-    `
-  }
-};
-
-// ============================================================
-// ЛОГИКА
-// ============================================================
-
-let currentDoc = 'pps';
-
-function switchDept(dept) {
-  currentDoc = dept;
-  document.querySelectorAll('.sidebar button').forEach(b => b.classList.remove('active'));
-  const btn = document.querySelector(`[data-dept="${dept}"]`);
-  if (btn) btn.classList.add('active');
-  renderForm();
-  renderPreview();
-}
-
-function renderForm() {
-  const doc = documents[currentDoc];
-  const formArea = document.getElementById('formArea');
-  formArea.innerHTML = `<h2>${doc.title}</h2><div class="form-grid" id="formGrid"></div>`;
-  const grid = document.getElementById('formGrid');
-
-  doc.fields.forEach(f => {
-    const div = document.createElement('div');
-    div.className = 'form-group';
-    div.innerHTML = `
-      <label>${f.label}</label>
-      ${f.type === 'textarea'
-        ? `<textarea id="f_${f.id}" placeholder="${f.placeholder || ''}" oninput="renderPreview()"></textarea>`
-        : `<input type="${f.type}" id="f_${f.id}" placeholder="${f.placeholder || ''}" oninput="renderPreview()">`}
-    `;
-    grid.appendChild(div);
-  });
-
-  // Восстанавливаем сохранённые данные если есть
-  const saved = localStorage.getItem('doc_data_' + currentDoc);
-  if (saved) {
-    const data = JSON.parse(saved);
-    doc.fields.forEach(f => {
-      const el = document.getElementById('f_' + f.id);
-      if (el && data[f.id]) el.value = data[f.id];
-    });
-  }
-}
-
-function renderPreview() {
-  const doc = documents[currentDoc];
-  const data = {};
-  doc.fields.forEach(f => {
-    const el = document.getElementById('f_' + f.id);
-    if (el) data[f.id] = el.value;
-  });
-
-  // Сохраняем
-  localStorage.setItem('doc_data_' + currentDoc, JSON.stringify(data));
-
-  // Рендерим
-  document.getElementById('documentPreview').innerHTML = doc.preview(data);
-}
-
-function clearForm() {
-  if (confirm('Очистить форму?')) {
-    const doc = documents[currentDoc];
-    doc.fields.forEach(f => {
-      const el = document.getElementById('f_' + f.id);
-      if (el) el.value = '';
-    });
-    localStorage.removeItem('doc_data_' + currentDoc);
-    renderPreview();
-  }
-}
-
-function parseExits(text) {
-  if (!text) return '<div style="border:1px solid #000; padding:8px;">Нет выездов</div>';
-  const lines = text.split('|').filter(l => l.trim());
-  return lines.map((line, i) => {
-    const parts = line.split(';').map(p => p.trim());
-    return `
-      <div style="border:1px solid #000; padding:8px; margin:5px 0;">
-        <strong>Выезд № ${i+1}</strong><br>
-        Код: ${parts[0] || '____'} | Получение: ${parts[1] || '____'} | Прибытие: ${parts[2] || '____'}<br>
-        Адрес: ${parts[3] || '________________'}<br>
-        Фабула: ${parts[4] || '________________'}<br>
-        Результат: ${parts[5] || '________________'} | Убытие: ${parts[6] || '____'}
-      </div>
-    `;
-  }).join('');
-}
-
-// Инициализация
-renderForm();
-renderPreview();
-</script>
-</body>
-</html>
+      { id: 'work', label: 'Проделанная работа', type: 'textarea
