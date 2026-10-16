@@ -4,274 +4,196 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Документооборот МВД</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: 'Segoe UI', Arial, sans-serif;
-    background: #0f0f1a;
-    color: #e0e0e0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    background: #0f0f1a; color: #e0e0e0;
+    min-height: 100vh; display: flex; flex-direction: column;
   }
 
-  /* ВЕРХНЯЯ ПАНЕЛЬ */
+  /* TOPBAR */
   .topbar {
-    background: #16162a;
-    padding: 12px 20px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
+    background: #16162a; padding: 12px 20px;
+    display: flex; align-items: center; gap: 16px;
     border-bottom: 1px solid #2a2a4a;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    position: sticky; top: 0; z-index: 100;
   }
+  .topbar .title { font-size: 15px; color: #f0c040; font-weight: 600; }
+  .topbar .spacer { flex: 1; }
+  .topbar .doc-name { font-size: 13px; color: #888; margin-right: 10px; }
   .burger-btn {
-    background: #1e1e3a;
-    border: 1px solid #2a2a4a;
-    color: #f0c040;
-    font-size: 20px;
-    padding: 8px 14px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.15s;
+    background: #1e1e3a; border: 1px solid #2a2a4a; color: #f0c040;
+    font-size: 20px; padding: 8px 14px; border-radius: 6px;
+    cursor: pointer; font-family: inherit;
   }
   .burger-btn:hover { background: #2a2a4a; }
-  .topbar .title {
-    font-size: 15px;
-    color: #f0c040;
-    font-weight: 600;
-  }
-  .topbar .doc-name {
-    font-size: 13px;
-    color: #888;
-    margin-left: auto;
-  }
 
-  /* ВЫПАДАЮЩЕЕ МЕНЮ */
+  /* DROPDOWN */
   .dropdown {
-    position: absolute;
-    top: 60px;
-    left: 20px;
-    background: #16162a;
-    border: 1px solid #2a2a4a;
-    border-radius: 8px;
-    min-width: 280px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-    z-index: 200;
-    display: none;
-    overflow: hidden;
-    max-height: 80vh;
-    overflow-y: auto;
+    position: absolute; top: 60px; right: 20px;
+    background: #16162a; border: 1px solid #2a2a4a;
+    border-radius: 8px; min-width: 320px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6); z-index: 200;
+    display: none; max-height: 80vh; overflow-y: auto;
   }
   .dropdown.open { display: block; }
   .dropdown .section-label {
-    padding: 12px 18px 6px;
-    font-size: 11px;
-    color: #5a5a8a;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    font-weight: 600;
-    background: #1a1a30;
+    padding: 12px 18px 6px; font-size: 11px; color: #5a5a8a;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    font-weight: 600; background: #1a1a30;
   }
   .dropdown button {
-    display: block;
-    width: 100%;
-    text-align: left;
-    padding: 11px 18px;
-    background: none;
-    border: none;
-    color: #b0b0c0;
-    font-size: 14px;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.15s;
-    border-left: 3px solid transparent;
+    display: block; width: 100%; text-align: left;
+    padding: 11px 18px; background: none; border: none;
+    color: #b0b0c0; font-size: 14px; cursor: pointer;
+    font-family: inherit; border-right: 3px solid transparent;
   }
-  .dropdown button:hover {
-    background: #1e1e3a;
-    color: #fff;
-  }
+  .dropdown button:hover { background: #1e1e3a; color: #fff; }
   .dropdown button.active {
-    background: #1e1e3a;
-    color: #f0c040;
-    border-left-color: #f0c040;
-    font-weight: 500;
+    background: #1e1e3a; color: #f0c040;
+    border-right-color: #f0c040; font-weight: 500;
   }
 
-  /* ОСНОВНАЯ ЧАСТЬ */
-  .main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
+  /* PAGE 1: ФОРМА */
+  .page { flex: 1; display: none; flex-direction: column; overflow: hidden; }
+  .page.active { display: flex; }
 
-  /* ФОРМА СПРАВА */
-  .form-panel {
-    background: #16162a;
-    padding: 24px 32px;
-    overflow-y: auto;
-    max-height: 45vh;
-    border-bottom: 1px solid #2a2a4a;
+  .form-container {
+    flex: 1; padding: 24px 32px; overflow-y: auto;
   }
-  .form-panel h2 {
-    font-size: 16px;
-    color: #f0c040;
-    margin-bottom: 20px;
-    font-weight: 600;
+  .form-container h2 {
+    font-size: 16px; color: #f0c040; margin-bottom: 20px; font-weight: 600;
   }
   .form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 14px;
   }
   .form-group { display: flex; flex-direction: column; }
   .form-group.full { grid-column: 1 / -1; }
   .form-group label {
-    font-size: 11px;
-    color: #7a7a9a;
-    margin-bottom: 5px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 600;
+    font-size: 11px; color: #7a7a9a; margin-bottom: 5px;
+    text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;
   }
   .form-group input, .form-group textarea {
-    padding: 9px 12px;
-    font-size: 13px;
-    border: 1px solid #2a2a4a;
-    background: #0f0f1a;
-    color: #e0e0e0;
-    border-radius: 6px;
+    padding: 9px 12px; font-size: 13px; border: 1px solid #2a2a4a;
+    background: #0f0f1a; color: #e0e0e0; border-radius: 6px;
     font-family: inherit;
-    transition: border-color 0.15s;
   }
   .form-group input:focus, .form-group textarea:focus {
-    outline: none;
-    border-color: #f0c040;
+    outline: none; border-color: #f0c040;
   }
   .form-group textarea { resize: vertical; min-height: 70px; }
 
-  /* ПРЕДПРОСМОТР */
-  .preview-panel {
-    flex: 1;
-    padding: 32px;
-    overflow-y: auto;
-    display: flex;
-    justify-content: center;
-    background: #0a0a14;
+  .photo-block { margin-top: 24px; border-top: 1px solid #2a2a4a; padding-top: 16px; }
+  .photo-block h3 { font-size: 13px; color: #f0c040; margin-bottom: 10px; }
+  .photo-upload-btn {
+    display: inline-block; padding: 10px 20px; background: #1e1e3a;
+    border: 1px dashed #4a4a6a; border-radius: 6px; color: #b0b0c0;
+    cursor: pointer; font-size: 13px;
   }
-  .document {
-    background: #fff;
-    width: 210mm;
-    min-height: 297mm;
-    padding: 20mm 18mm;
-    box-shadow: 0 0 40px rgba(0,0,0,0.5);
-    font-family: 'Times New Roman', 'Georgia', serif;
-    font-size: 12pt;
-    line-height: 1.6;
-    color: #000;
-    border-radius: 2px;
+  .photo-upload-btn:hover { border-color: #f0c040; color: #f0c040; }
+  .photo-preview-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+  .photo-item {
+    position: relative; width: 90px; height: 90px;
+    border-radius: 6px; overflow: hidden; border: 1px solid #2a2a4a;
   }
-  .document h2 {
-    text-align: center;
-    font-size: 15pt;
-    font-weight: bold;
-    margin-bottom: 4px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  .document .subtitle {
-    text-align: center;
-    font-size: 11pt;
-    margin-bottom: 24px;
-    color: #333;
-  }
-  .document .field {
-    border-bottom: 1px solid #000;
-    display: inline-block;
-    min-width: 80px;
-    padding: 0 4px;
-    min-height: 1.2em;
-  }
-  .document .line { margin: 8px 0; }
-  .document .section-title {
-    font-weight: bold;
-    margin-top: 18px;
-    margin-bottom: 8px;
-    font-size: 12pt;
-  }
-  .document .indent { text-indent: 32px; }
-  .document .signature {
-    text-align: right;
-    margin-top: 40px;
-  }
-  .document .box {
-    border: 1px solid #000;
-    padding: 10px;
-    min-height: 50px;
-    margin: 8px 0;
-    font-size: 11pt;
+  .photo-item img { width: 100%; height: 100%; object-fit: cover; }
+  .photo-item .remove {
+    position: absolute; top: 2px; right: 2px;
+    background: rgba(200,50,50,0.9); color: #fff;
+    border: none; border-radius: 4px; width: 20px; height: 20px;
+    cursor: pointer; font-size: 12px; line-height: 1;
   }
 
-  /* КНОПКИ */
+  /* PAGE 2: ДОКУМЕНТ */
+  .doc-container {
+    flex: 1; padding: 24px; overflow-y: auto;
+    display: flex; justify-content: center; background: #0a0a14;
+  }
+  .document {
+    background: #fff; width: 210mm; min-height: 297mm;
+    padding: 20mm 18mm; box-shadow: 0 0 40px rgba(0,0,0,0.5);
+    font-family: 'Times New Roman', 'Georgia', serif;
+    font-size: 12pt; line-height: 1.6; color: #000;
+  }
+  .document h2 {
+    text-align: center; font-size: 15pt; font-weight: bold;
+    margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;
+  }
+  .document .subtitle { text-align: center; font-size: 11pt; margin-bottom: 24px; color: #333; }
+  .document .field {
+    border-bottom: 1px solid #000; display: inline-block;
+    min-width: 80px; padding: 0 4px; min-height: 1.2em;
+  }
+  .document .line { margin: 8px 0; }
+  .document .section-title { font-weight: bold; margin-top: 18px; margin-bottom: 8px; font-size: 12pt; }
+  .document .indent { text-indent: 32px; }
+  .document .signature { text-align: right; margin-top: 40px; }
+  .document .box {
+    border: 1px solid #000; padding: 10px; min-height: 50px;
+    margin: 8px 0; font-size: 11pt;
+  }
+
+  /* ACTIONS */
   .actions {
-    padding: 16px 32px;
-    background: #16162a;
-    display: flex;
-    gap: 12px;
-    border-top: 1px solid #2a2a4a;
+    padding: 14px 24px; background: #16162a;
+    display: flex; gap: 10px; border-top: 1px solid #2a2a4a;
+    flex-wrap: wrap; justify-content: center;
   }
   .actions button {
-    padding: 11px 24px;
-    font-size: 14px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    font-family: inherit;
-    transition: all 0.15s;
+    padding: 11px 22px; font-size: 14px; border: none;
+    border-radius: 6px; cursor: pointer; font-weight: 600;
+    font-family: inherit; transition: all 0.15s;
   }
-  .btn-print { background: #f0c040; color: #16162a; }
-  .btn-print:hover { background: #e0b030; }
+  .btn-next { background: #f0c040; color: #16162a; }
+  .btn-next:hover { background: #e0b030; }
+  .btn-back { background: #2a2a4a; color: #b0b0c0; }
+  .btn-back:hover { background: #3a3a5a; color: #fff; }
+  .btn-print { background: #4a90e2; color: #fff; }
+  .btn-print:hover { background: #3a80d2; }
+  .btn-discord { background: #5865f2; color: #fff; }
+  .btn-discord:hover { background: #4752c4; }
+  .btn-discord:disabled { background: #3a3a5a; cursor: not-allowed; }
   .btn-clear { background: #2a2a4a; color: #b0b0c0; }
   .btn-clear:hover { background: #3a3a5a; color: #fff; }
 
   @media (max-width: 900px) {
-    .form-panel { padding: 16px; max-height: none; }
-    .preview-panel { padding: 12px; }
+    .form-container { padding: 16px; }
+    .doc-container { padding: 12px; }
     .document { width: 100%; padding: 16px; font-size: 11pt; }
-    .actions { padding: 12px 16px; }
+    .actions { padding: 10px; }
     .actions button { flex: 1; padding: 10px; font-size: 13px; }
     .dropdown { left: 10px; right: 10px; min-width: auto; }
   }
 
   @media print {
     body { background: #fff; display: block; }
-    .topbar, .form-panel, .actions, .dropdown { display: none !important; }
-    .preview-panel { padding: 0; display: block; overflow: visible; }
-    .document { box-shadow: none; width: auto; min-height: auto; padding: 15mm; border-radius: 0; }
+    .topbar, .actions, .dropdown { display: none !important; }
+    .page { display: none !important; }
+    #page-doc { display: block !important; }
+    .doc-container { padding: 0; overflow: visible; display: block; }
+    .document { box-shadow: none; width: auto; min-height: auto; padding: 15mm; }
   }
 </style>
 </head>
 <body>
 
-<!-- ВЕРХНЯЯ ПАНЕЛЬ -->
 <div class="topbar">
-  <button class="burger-btn" onclick="toggleMenu(event)">☰</button>
   <div class="title">📋 Документооборот МВД</div>
+  <div class="spacer"></div>
   <div class="doc-name" id="currentDocName">Бортовой журнал</div>
+  <button class="burger-btn" onclick="toggleMenu(event)">☰</button>
 </div>
 
-<!-- ВЫПАДАЮЩЕЕ МЕНЮ -->
 <div class="dropdown" id="dropdown">
   <div class="section-label">ППСП</div>
   <button class="nav-btn active" data-doc="pps-journal" onclick="switchDoc('pps-journal')">Бортовой журнал</button>
   <button class="nav-btn" data-doc="pps-admin" onclick="switchDoc('pps-admin')">Протокол задержания</button>
   <button class="nav-btn" data-doc="pps-search" onclick="switchDoc('pps-search')">Протокол досмотра</button>
   <button class="nav-btn" data-doc="pps-seize" onclick="switchDoc('pps-seize')">Протокол изъятия</button>
+  <button class="nav-btn" data-doc="pps-rap" onclick="switchDoc('pps-rap')">Рапорт о преступлении</button>
 
   <div class="section-label">ДПС</div>
   <button class="nav-btn" data-doc="dps-offense" onclick="switchDoc('dps-offense')">Протокол об АП</button>
@@ -281,30 +203,52 @@
   <div class="section-label">ОУР</div>
   <button class="nav-btn" data-doc="our-wanted" onclick="switchDoc('our-wanted')">Разыскная ориентировка</button>
   <button class="nav-btn" data-doc="our-report" onclick="switchDoc('our-report')">Рапорт о работе</button>
+  <button class="nav-btn" data-doc="our-rap" onclick="switchDoc('our-rap')">Рапорт о преступлении</button>
 </div>
 
-<!-- ОСНОВНАЯ ЧАСТЬ -->
-<div class="main">
-  <div class="form-panel" id="formPanel">
+<!-- СТРАНИЦА 1: ФОРМА -->
+<div class="page active" id="page-form">
+  <div class="form-container">
     <h2 id="formTitle">Заполнение</h2>
     <div class="form-grid" id="formGrid"></div>
-  </div>
 
-  <div class="preview-panel">
-    <div class="document" id="docPreview"></div>
+    <div class="photo-block">
+      <h3>📎 Прикрепить фото</h3>
+      <label class="photo-upload-btn" for="photoInput">＋ Выбрать файлы</label>
+      <input type="file" id="photoInput" accept="image/*" multiple onchange="handlePhotos(event)" style="display:none;">
+      <div class="photo-preview-grid" id="photoGrid"></div>
+    </div>
   </div>
-
   <div class="actions">
-    <button class="btn-print" onclick="window.print()">🖨 Печать / Сохранить PDF</button>
+    <button class="btn-next" onclick="goToDoc()">📄 Перейти к документу →</button>
     <button class="btn-clear" onclick="clearForm()">🗑 Очистить</button>
   </div>
 </div>
 
+<!-- СТРАНИЦА 2: ДОКУМЕНТ -->
+<div class="page" id="page-doc">
+  <div class="doc-container">
+    <div class="document" id="docPreview"></div>
+  </div>
+  <div class="actions">
+    <button class="btn-back" onclick="goToForm()">← Назад к форме</button>
+    <button class="btn-print" onclick="window.print()">🖨 Сохранить PDF</button>
+    <button class="btn-discord" id="discordBtn" onclick="sendToDiscord()">🤖 Отправить в Discord</button>
+  </div>
+</div>
+
 <script>
+// ============================================================
+// НАСТРОЙКИ DISCORD
+// ============================================================
+const WEBHOOK_URL = "https://discord.com/api/webhooks/1560636556673552506/qkn1vrm5MoB-miSHONFaqqxU0YNtLe3xaQ0QpZDu08CnuqNJepDjEyWV1TYkXp7rQofG";
+
+// ============================================================
+// ДОКУМЕНТЫ
+// ============================================================
 const DOCS = {
   'pps-journal': {
-    title: 'Бортовой журнал автопатруля',
-    shortName: 'Бортовой журнал',
+    title: 'Бортовой журнал автопатруля', shortName: 'Бортовой журнал',
     fields: [
       { id: 'date', label: 'Дата', type: 'date' },
       { id: 'time_start', label: 'Начало службы', type: 'time' },
@@ -319,7 +263,7 @@ const DOCS = {
     render: (d) => `
       <h2>Бортовой журнал автопатруля</h2>
       <div class="subtitle">Отдельная рота патрульно-постовой службы полиции</div>
-      <div class="line">Начат: <span class="field">${d.time_start||'____'}</span> &nbsp;&nbsp; Окончен: <span class="field">${d.time_end||'____'}</span></div>
+      <div class="line">Начат: <span class="field">${d.time_start||'____'}</span> &nbsp; Окончен: <span class="field">${d.time_end||'____'}</span></div>
       <div class="line">«<span class="field">${d.date?d.date.split('-')[2]:'____'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> <span class="field">${d.date?d.date.split('-')[0]:'____'}</span> г.</div>
       <div class="section-title">Наряд в составе:</div>
       <div class="line">Старший: <span class="field" style="min-width:300px;">${d.senior||'________________'}</span></div>
@@ -330,13 +274,10 @@ const DOCS = {
       <div class="box">${(d.notes||'').replace(/\n/g,'<br>')||'&nbsp;'}</div>
     `
   },
-
   'pps-admin': {
-    title: 'Протокол об административном задержании',
-    shortName: 'Протокол задержания',
+    title: 'Протокол об административном задержании', shortName: 'Протокол задержания',
     fields: [
-      { id: 'date', label: 'Дата', type: 'date' },
-      { id: 'time', label: 'Время', type: 'time' },
+      { id: 'date', label: 'Дата', type: 'date' }, { id: 'time', label: 'Время', type: 'time' },
       { id: 'place', label: 'Место составления', type: 'text', full: true },
       { id: 'officer', label: 'Кто составил', type: 'text', full: true },
       { id: 'detainee', label: 'Задержанный (ФИО)', type: 'text', full: true },
@@ -346,33 +287,19 @@ const DOCS = {
       { id: 'witnesses', label: 'Понятые', type: 'textarea', full: true }
     ],
     render: (d) => `
-      <h2>ПРОТОКОЛ</h2>
-      <div class="subtitle">об административном задержании</div>
+      <h2>ПРОТОКОЛ</h2><div class="subtitle">об административном задержании</div>
       <div class="line">«<span class="field">${d.date?d.date.split('-')[2]:'____'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> <span class="field">${d.date?d.date.split('-')[0]:'____'}</span> г. <span class="field">${d.time||'__:__'}</span></div>
       <div class="line">Место составления: <span class="field" style="min-width:300px;">${d.place||'________________'}</span></div>
-      <div class="indent" style="margin-top:16px;">
-        Я, <span class="field" style="min-width:300px;">${d.officer||'________________'}</span>, составил настоящий протокол об административном задержании гражданина(ки)
-        <span class="field" style="min-width:250px;">${d.detainee||'________________'}</span>,
-        <span class="field" style="min-width:200px;">${d.birth||'________________'}</span>,
-        место жительства: <span class="field" style="min-width:250px;">${d.address||'________________'}</span>
-      </div>
-      <div class="section-title">Основание задержания:</div>
-      <div class="box">${d.reason||'&nbsp;'}</div>
-      <div class="section-title">Понятые:</div>
-      <div class="box">${d.witnesses||'&nbsp;'}</div>
-      <div class="signature">
-        Подпись задержанного: _______________<br>
-        Подпись составителя: _______________
-      </div>
+      <div class="indent" style="margin-top:16px;">Я, <span class="field" style="min-width:300px;">${d.officer||'________________'}</span>, составил настоящий протокол об административном задержании гражданина(ки) <span class="field" style="min-width:250px;">${d.detainee||'________________'}</span>, <span class="field" style="min-width:200px;">${d.birth||'________________'}</span>, место жительства: <span class="field" style="min-width:250px;">${d.address||'________________'}</span></div>
+      <div class="section-title">Основание задержания:</div><div class="box">${d.reason||'&nbsp;'}</div>
+      <div class="section-title">Понятые:</div><div class="box">${d.witnesses||'&nbsp;'}</div>
+      <div class="signature">Подпись задержанного: _______________<br>Подпись составителя: _______________</div>
     `
   },
-
   'pps-search': {
-    title: 'Протокол о личном досмотре',
-    shortName: 'Протокол досмотра',
+    title: 'Протокол о личном досмотре', shortName: 'Протокол досмотра',
     fields: [
-      { id: 'date', label: 'Дата', type: 'date' },
-      { id: 'time', label: 'Время', type: 'time' },
+      { id: 'date', label: 'Дата', type: 'date' }, { id: 'time', label: 'Время', type: 'time' },
       { id: 'place', label: 'Место составления', type: 'text', full: true },
       { id: 'officer', label: 'Кто составил', type: 'text', full: true },
       { id: 'person', label: 'Досматриваемый (ФИО)', type: 'text', full: true },
@@ -382,34 +309,20 @@ const DOCS = {
       { id: 'witnesses', label: 'Понятые', type: 'textarea', full: true }
     ],
     render: (d) => `
-      <h2>ПРОТОКОЛ</h2>
-      <div class="subtitle">о личном досмотре, досмотре вещей</div>
+      <h2>ПРОТОКОЛ</h2><div class="subtitle">о личном досмотре, досмотре вещей</div>
       <div class="line">«<span class="field">${d.date?d.date.split('-')[2]:'____'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> <span class="field">${d.date?d.date.split('-')[0]:'____'}</span> г. <span class="field">${d.time||'__:__'}</span></div>
       <div class="line">Место: <span class="field" style="min-width:300px;">${d.place||'________________'}</span></div>
-      <div class="indent" style="margin-top:16px;">
-        Я, <span class="field" style="min-width:300px;">${d.officer||'________________'}</span>, осуществил личный досмотр гражданина(ки)
-        <span class="field" style="min-width:250px;">${d.person||'________________'}</span>,
-        проживающего(ей): <span class="field" style="min-width:250px;">${d.address||'________________'}</span>
-      </div>
-      <div class="section-title">Основание досмотра:</div>
-      <div class="box">${d.reason||'&nbsp;'}</div>
-      <div class="section-title">Обнаружено:</div>
-      <div class="box">${d.found||'&nbsp;'}</div>
-      <div class="section-title">Понятые:</div>
-      <div class="box">${d.witnesses||'&nbsp;'}</div>
-      <div class="signature">
-        Подпись досматриваемого: _______________<br>
-        Подпись составителя: _______________
-      </div>
+      <div class="indent" style="margin-top:16px;">Я, <span class="field" style="min-width:300px;">${d.officer||'________________'}</span>, осуществил личный досмотр гражданина(ки) <span class="field" style="min-width:250px;">${d.person||'________________'}</span>, проживающего(ей): <span class="field" style="min-width:250px;">${d.address||'________________'}</span></div>
+      <div class="section-title">Основание досмотра:</div><div class="box">${d.reason||'&nbsp;'}</div>
+      <div class="section-title">Обнаружено:</div><div class="box">${d.found||'&nbsp;'}</div>
+      <div class="section-title">Понятые:</div><div class="box">${d.witnesses||'&nbsp;'}</div>
+      <div class="signature">Подпись досматриваемого: _______________<br>Подпись составителя: _______________</div>
     `
   },
-
   'pps-seize': {
-    title: 'Протокол об изъятии вещей и документов',
-    shortName: 'Протокол изъятия',
+    title: 'Протокол об изъятии вещей и документов', shortName: 'Протокол изъятия',
     fields: [
-      { id: 'date', label: 'Дата', type: 'date' },
-      { id: 'time', label: 'Время', type: 'time' },
+      { id: 'date', label: 'Дата', type: 'date' }, { id: 'time', label: 'Время', type: 'time' },
       { id: 'place', label: 'Место составления', type: 'text', full: true },
       { id: 'officer', label: 'Кто составил', type: 'text', full: true },
       { id: 'person', label: 'У кого изъято (ФИО)', type: 'text', full: true },
@@ -418,33 +331,39 @@ const DOCS = {
       { id: 'witnesses', label: 'Понятые', type: 'textarea', full: true }
     ],
     render: (d) => `
-      <h2>ПРОТОКОЛ</h2>
-      <div class="subtitle">об изъятии вещей и документов</div>
+      <h2>ПРОТОКОЛ</h2><div class="subtitle">об изъятии вещей и документов</div>
       <div class="line">«<span class="field">${d.date?d.date.split('-')[2]:'____'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> <span class="field">${d.date?d.date.split('-')[0]:'____'}</span> г. <span class="field">${d.time||'__:__'}</span></div>
       <div class="line">Место: <span class="field" style="min-width:300px;">${d.place||'________________'}</span></div>
-      <div class="indent" style="margin-top:16px;">
-        Я, <span class="field" style="min-width:300px;">${d.officer||'________________'}</span>, составил настоящий протокол о том, что у гражданина(ки)
-        <span class="field" style="min-width:250px;">${d.person||'________________'}</span>
-      </div>
-      <div class="section-title">Изъято:</div>
-      <div class="box">${d.items||'&nbsp;'}</div>
-      <div class="section-title">Основание:</div>
-      <div class="box">${d.reason||'&nbsp;'}</div>
-      <div class="section-title">Понятые:</div>
-      <div class="box">${d.witnesses||'&nbsp;'}</div>
-      <div class="signature">
-        Подпись лица, у которого изъято: _______________<br>
-        Подпись составителя: _______________
-      </div>
+      <div class="indent" style="margin-top:16px;">Я, <span class="field" style="min-width:300px;">${d.officer||'________________'}</span>, составил настоящий протокол о том, что у гражданина(ки) <span class="field" style="min-width:250px;">${d.person||'________________'}</span></div>
+      <div class="section-title">Изъято:</div><div class="box">${d.items||'&nbsp;'}</div>
+      <div class="section-title">Основание:</div><div class="box">${d.reason||'&nbsp;'}</div>
+      <div class="section-title">Понятые:</div><div class="box">${d.witnesses||'&nbsp;'}</div>
+      <div class="signature">Подпись лица, у которого изъято: _______________<br>Подпись составителя: _______________</div>
     `
   },
-
-  'dps-offense': {
-    title: 'Протокол об административном правонарушении',
-    shortName: 'Протокол об АП',
+  'pps-rap': {
+    title: 'Рапорт об обнаружении признаков преступления', shortName: 'Рапорт о преступлении',
     fields: [
-      { id: 'date', label: 'Дата', type: 'date' },
-      { id: 'time', label: 'Время', type: 'time' },
+      { id: 'to', label: 'Кому (руководитель)', type: 'text', full: true },
+      { id: 'officer', label: 'От (должность, звание, ФИО)', type: 'text', full: true },
+      { id: 'date', label: 'Дата', type: 'date' }, { id: 'place', label: 'Место составления', type: 'text' },
+      { id: 'content', label: 'Содержание сообщения', type: 'textarea', full: true },
+      { id: 'article', label: 'Статья УК РФ', type: 'text', full: true }
+    ],
+    render: (d) => `
+      <div style="text-align:right; margin-bottom:24px;">${d.to||'Начальнику ОП № 2'}<br>от ${d.officer||'________________'}</div>
+      <h2>РАПОРТ</h2><div class="subtitle">об обнаружении признаков преступления</div>
+      <div class="line">«<span class="field">${d.date?d.date.split('-')[2]:'____'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> <span class="field">${d.date?d.date.split('-')[0]:'____'}</span> г. <span class="field">${d.place||'________________'}</span></div>
+      <div class="indent" style="margin-top:16px;">Докладываю в соответствии со ст. 143 УПК РФ о том, что:</div>
+      <div class="box" style="min-height:120px;">${(d.content||'').replace(/\n/g,'<br>')||'&nbsp;'}</div>
+      <div class="line" style="margin-top:10px;">Таким образом, в действиях усматриваются признаки состава преступления, предусмотренного <span class="field" style="min-width:200px;">${d.article||'________________'}</span>.</div>
+      <div class="signature">Подпись: _______________</div>
+    `
+  },
+  'dps-offense': {
+    title: 'Протокол об административном правонарушении', shortName: 'Протокол об АП',
+    fields: [
+      { id: 'date', label: 'Дата', type: 'date' }, { id: 'time', label: 'Время', type: 'time' },
       { id: 'place', label: 'Место составления', type: 'text', full: true },
       { id: 'officer', label: 'Кто составил', type: 'text', full: true },
       { id: 'offender', label: 'Нарушитель (ФИО)', type: 'text', full: true },
@@ -455,61 +374,39 @@ const DOCS = {
       { id: 'witnesses', label: 'Свидетели', type: 'textarea', full: true }
     ],
     render: (d) => `
-      <h2>ПРОТОКОЛ</h2>
-      <div class="subtitle">об административном правонарушении</div>
+      <h2>ПРОТОКОЛ</h2><div class="subtitle">об административном правонарушении</div>
       <div class="line">«<span class="field">${d.date?d.date.split('-')[2]:'____'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> <span class="field">${d.date?d.date.split('-')[0]:'____'}</span> г. <span class="field">${d.time||'__:__'}</span></div>
       <div class="line">Место: <span class="field" style="min-width:300px;">${d.place||'________________'}</span></div>
-      <div class="indent" style="margin-top:16px;">
-        Я, <span class="field" style="min-width:300px;">${d.officer||'________________'}</span>, составил настоящий протокол о том, что гражданин(ка)
-        <span class="field" style="min-width:250px;">${d.offender||'________________'}</span>,
-        проживающий(ая): <span class="field" style="min-width:250px;">${d.address||'________________'}</span>
-      </div>
-      <div class="line" style="margin-top:10px;">
-        управляя ТС: <span class="field" style="min-width:250px;">${d.vehicle||'________________'}</span>,
-        совершил(а) нарушение по ст. <span class="field">${d.article||'____'}</span> КоАП РФ.
-      </div>
-      <div class="section-title">Суть нарушения:</div>
-      <div class="box">${d.desc||'&nbsp;'}</div>
-      <div class="section-title">Свидетели:</div>
-      <div class="box">${d.witnesses||'&nbsp;'}</div>
-      <div class="signature">
-        Подпись нарушителя: _______________<br>
-        Подпись составителя: _______________
-      </div>
+      <div class="indent" style="margin-top:16px;">Я, <span class="field" style="min-width:300px;">${d.officer||'________________'}</span>, составил настоящий протокол о том, что гражданин(ка) <span class="field" style="min-width:250px;">${d.offender||'________________'}</span>, проживающий(ая): <span class="field" style="min-width:250px;">${d.address||'________________'}</span></div>
+      <div class="line" style="margin-top:10px;">управляя ТС: <span class="field" style="min-width:250px;">${d.vehicle||'________________'}</span>, совершил(а) нарушение по ст. <span class="field">${d.article||'____'}</span> КоАП РФ.</div>
+      <div class="section-title">Суть нарушения:</div><div class="box">${d.desc||'&nbsp;'}</div>
+      <div class="section-title">Свидетели:</div><div class="box">${d.witnesses||'&nbsp;'}</div>
+      <div class="signature">Подпись нарушителя: _______________<br>Подпись составителя: _______________</div>
     `
   },
-
   'dps-scheme': {
-    title: 'Схема места совершения АП',
-    shortName: 'Схема места АП',
+    title: 'Схема места совершения АП', shortName: 'Схема места АП',
     fields: [
-      { id: 'date', label: 'Дата', type: 'date' },
-      { id: 'time', label: 'Время', type: 'time' },
+      { id: 'date', label: 'Дата', type: 'date' }, { id: 'time', label: 'Время', type: 'time' },
       { id: 'place', label: 'Место', type: 'text', full: true },
       { id: 'officer', label: 'Кто составил', type: 'text', full: true },
       { id: 'desc', label: 'Описание схемы', type: 'textarea', full: true },
       { id: 'witnesses', label: 'Понятые', type: 'textarea', full: true }
     ],
     render: (d) => `
-      <h2>СХЕМА</h2>
-      <div class="subtitle">места совершения административного правонарушения</div>
+      <h2>СХЕМА</h2><div class="subtitle">места совершения административного правонарушения</div>
       <div class="line">«<span class="field">${d.date?d.date.split('-')[2]:'____'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> <span class="field">${d.date?d.date.split('-')[0]:'____'}</span> г. <span class="field">${d.time||'__:__'}</span></div>
       <div class="line">Место: <span class="field" style="min-width:300px;">${d.place||'________________'}</span></div>
       <div class="line" style="margin-top:16px;">Составил: <span class="field" style="min-width:300px;">${d.officer||'________________'}</span></div>
-      <div class="section-title">Описание схемы:</div>
-      <div class="box" style="min-height:120px;">${d.desc||'&nbsp;'}</div>
-      <div class="section-title">Понятые:</div>
-      <div class="box">${d.witnesses||'&nbsp;'}</div>
+      <div class="section-title">Описание схемы:</div><div class="box" style="min-height:120px;">${d.desc||'&nbsp;'}</div>
+      <div class="section-title">Понятые:</div><div class="box">${d.witnesses||'&nbsp;'}</div>
       <div class="signature">Подпись составителя: _______________</div>
     `
   },
-
   'dps-remove': {
-    title: 'Протокол об отстранении от управления ТС',
-    shortName: 'Отстранение от ТС',
+    title: 'Протокол об отстранении от управления ТС', shortName: 'Отстранение от ТС',
     fields: [
-      { id: 'date', label: 'Дата', type: 'date' },
-      { id: 'time', label: 'Время', type: 'time' },
+      { id: 'date', label: 'Дата', type: 'date' }, { id: 'time', label: 'Время', type: 'time' },
       { id: 'place', label: 'Место составления', type: 'text', full: true },
       { id: 'officer', label: 'Кто составил', type: 'text', full: true },
       { id: 'driver', label: 'Водитель (ФИО)', type: 'text', full: true },
@@ -518,29 +415,17 @@ const DOCS = {
       { id: 'witnesses', label: 'Понятые', type: 'textarea', full: true }
     ],
     render: (d) => `
-      <h2>ПРОТОКОЛ</h2>
-      <div class="subtitle">об отстранении от управления транспортным средством</div>
+      <h2>ПРОТОКОЛ</h2><div class="subtitle">об отстранении от управления транспортным средством</div>
       <div class="line">«<span class="field">${d.date?d.date.split('-')[2]:'____'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> <span class="field">${d.date?d.date.split('-')[0]:'____'}</span> г. <span class="field">${d.time||'__:__'}</span></div>
       <div class="line">Место: <span class="field" style="min-width:300px;">${d.place||'________________'}</span></div>
-      <div class="indent" style="margin-top:16px;">
-        Я, <span class="field" style="min-width:300px;">${d.officer||'________________'}</span>, составил настоящий протокол об отстранении от управления ТС гражданина(ки)
-        <span class="field" style="min-width:250px;">${d.driver||'________________'}</span>,
-        управлявшего ТС: <span class="field" style="min-width:250px;">${d.vehicle||'________________'}</span>
-      </div>
-      <div class="section-title">Основание отстранения:</div>
-      <div class="box">${d.reason||'&nbsp;'}</div>
-      <div class="section-title">Понятые:</div>
-      <div class="box">${d.witnesses||'&nbsp;'}</div>
-      <div class="signature">
-        Подпись водителя: _______________<br>
-        Подпись составителя: _______________
-      </div>
+      <div class="indent" style="margin-top:16px;">Я, <span class="field" style="min-width:300px;">${d.officer||'________________'}</span>, составил настоящий протокол об отстранении от управления ТС гражданина(ки) <span class="field" style="min-width:250px;">${d.driver||'________________'}</span>, управлявшего ТС: <span class="field" style="min-width:250px;">${d.vehicle||'________________'}</span></div>
+      <div class="section-title">Основание отстранения:</div><div class="box">${d.reason||'&nbsp;'}</div>
+      <div class="section-title">Понятые:</div><div class="box">${d.witnesses||'&nbsp;'}</div>
+      <div class="signature">Подпись водителя: _______________<br>Подпись составителя: _______________</div>
     `
   },
-
   'our-wanted': {
-    title: 'Разыскная ориентировка',
-    shortName: 'Ориентировка',
+    title: 'Разыскная ориентировка', shortName: 'Ориентировка',
     fields: [
       { id: 'fio', label: 'ФИО разыскиваемого', type: 'text', full: true },
       { id: 'birth', label: 'Год рождения', type: 'text' },
@@ -550,59 +435,61 @@ const DOCS = {
     ],
     render: (d) => `
       <h2>РАЗЫСКНАЯ ОРИЕНТИРОВКА</h2>
-      <div class="indent" style="margin-top:16px;">
-        Разыскивается <span class="field" style="min-width:250px;">${d.fio||'________________'}</span>,
-        <span class="field" style="min-width:80px;">${d.birth||'____'}</span> года рождения.
-      </div>
-      <div class="line" style="margin-top:12px;">
-        <strong>Кем разыскивается:</strong> <span class="field" style="min-width:250px;">${d.reason||'________________'}</span>
-      </div>
-      <div class="section-title">Приметы:</div>
-      <div class="box">${d.appearance||'&nbsp;'}</div>
-      <div class="section-title">Особые приметы / одежда:</div>
-      <div class="box">${d.clothes||'&nbsp;'}</div>
+      <div class="indent" style="margin-top:16px;">Разыскивается <span class="field" style="min-width:250px;">${d.fio||'________________'}</span>, <span class="field" style="min-width:80px;">${d.birth||'____'}</span> года рождения.</div>
+      <div class="line" style="margin-top:12px;"><strong>Кем разыскивается:</strong> <span class="field" style="min-width:250px;">${d.reason||'________________'}</span></div>
+      <div class="section-title">Приметы:</div><div class="box">${d.appearance||'&nbsp;'}</div>
+      <div class="section-title">Особые приметы / одежда:</div><div class="box">${d.clothes||'&nbsp;'}</div>
       <div class="signature">Составил: _______________</div>
     `
   },
-
   'our-report': {
-    title: 'Рапорт о проделанной работе',
-    shortName: 'Рапорт о работе',
+    title: 'Рапорт о проделанной работе', shortName: 'Рапорт о работе',
     fields: [
-      { id: 'to', label: 'Кому (должность, звание)', type: 'text', full: true },
+      { id: 'to', label: 'Кому', type: 'text', full: true },
       { id: 'officer', label: 'От (должность, звание, ФИО)', type: 'text', full: true },
       { id: 'period', label: 'Период', type: 'text' },
       { id: 'work', label: 'Проделанная работа', type: 'textarea', full: true }
     ],
     render: (d) => `
-      <div style="text-align:right; margin-bottom:24px;">
-        ${d.to||'Начальнику ОУР'}<br>
-        от ${d.officer||'________________'}
-      </div>
+      <div style="text-align:right; margin-bottom:24px;">${d.to||'Начальнику ОУР'}<br>от ${d.officer||'________________'}</div>
       <h2>РАПОРТ</h2>
-      <div class="indent">
-        Докладываю Вам, что за период <span class="field">${d.period||'________________'}</span> мною была проделана следующая работа:
-      </div>
+      <div class="indent">Докладываю Вам, что за период <span class="field">${d.period||'________________'}</span> мною была проделана следующая работа:</div>
       <div class="box" style="min-height:150px; margin-top:12px;">${(d.work||'').replace(/\n/g,'<br>')||'&nbsp;'}</div>
-      <div class="signature">
-        Дата: «____» ______________ 20___ г.<br><br>
-        Подпись: _______________
-      </div>
+      <div class="signature">Дата: «____» ______________ 20___ г.<br><br>Подпись: _______________</div>
+    `
+  },
+  'our-rap': {
+    title: 'Рапорт об обнаружении признаков преступления', shortName: 'Рапорт о преступлении',
+    fields: [
+      { id: 'to', label: 'Кому', type: 'text', full: true },
+      { id: 'officer', label: 'От (должность, звание, ФИО)', type: 'text', full: true },
+      { id: 'date', label: 'Дата', type: 'date' }, { id: 'place', label: 'Место составления', type: 'text' },
+      { id: 'content', label: 'Содержание сообщения', type: 'textarea', full: true },
+      { id: 'article', label: 'Статья УК РФ', type: 'text', full: true }
+    ],
+    render: (d) => `
+      <div style="text-align:right; margin-bottom:24px;">${d.to||'Начальнику ОУР'}<br>от ${d.officer||'________________'}</div>
+      <h2>РАПОРТ</h2><div class="subtitle">об обнаружении признаков преступления</div>
+      <div class="line">«<span class="field">${d.date?d.date.split('-')[2]:'____'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> <span class="field">${d.date?d.date.split('-')[0]:'____'}</span> г. <span class="field">${d.place||'________________'}</span></div>
+      <div class="indent" style="margin-top:16px;">Докладываю в соответствии со ст. 143 УПК РФ о том, что:</div>
+      <div class="box" style="min-height:120px;">${(d.content||'').replace(/\n/g,'<br>')||'&nbsp;'}</div>
+      <div class="line" style="margin-top:10px;">Признаки состава преступления, предусмотренного <span class="field" style="min-width:200px;">${d.article||'________________'}</span>.</div>
+      <div class="signature">Подпись: _______________</div>
     `
   }
 };
 
 let currentDoc = 'pps-journal';
+let photos = [];
 
 function toggleMenu(e) {
   e.stopPropagation();
   document.getElementById('dropdown').classList.toggle('open');
 }
-
 document.addEventListener('click', (e) => {
   const dd = document.getElementById('dropdown');
   const btn = document.querySelector('.burger-btn');
-  if (!dd.contains(e.target) && e.target !== btn) {
+  if (!dd.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
     dd.classList.remove('open');
   }
 });
@@ -615,7 +502,16 @@ function switchDoc(id) {
   document.getElementById('currentDocName').textContent = DOCS[id].shortName || DOCS[id].title;
   document.getElementById('dropdown').classList.remove('open');
   renderForm();
+}
+
+function goToDoc() {
   renderPreview();
+  document.getElementById('page-form').classList.remove('active');
+  document.getElementById('page-doc').classList.add('active');
+}
+function goToForm() {
+  document.getElementById('page-doc').classList.remove('active');
+  document.getElementById('page-form').classList.add('active');
 }
 
 function renderForm() {
@@ -623,19 +519,17 @@ function renderForm() {
   document.getElementById('formTitle').textContent = doc.title;
   const grid = document.getElementById('formGrid');
   grid.innerHTML = '';
-
   doc.fields.forEach(f => {
     const div = document.createElement('div');
     div.className = 'form-group' + (f.full ? ' full' : '');
     div.innerHTML = `
       <label>${f.label}</label>
       ${f.type === 'textarea'
-        ? `<textarea id="f_${f.id}" oninput="renderPreview()"></textarea>`
-        : `<input type="${f.type}" id="f_${f.id}" oninput="renderPreview()">`}
+        ? `<textarea id="f_${f.id}"></textarea>`
+        : `<input type="${f.type}" id="f_${f.id}">`}
     `;
     grid.appendChild(div);
   });
-
   const saved = localStorage.getItem('doc_' + currentDoc);
   if (saved) {
     const data = JSON.parse(saved);
@@ -654,20 +548,109 @@ function renderPreview() {
     if (el) data[f.id] = el.value;
   });
   localStorage.setItem('doc_' + currentDoc, JSON.stringify(data));
-  document.getElementById('docPreview').innerHTML = doc.render(data);
+
+  let html = doc.render(data);
+  // Вставляем фото, если есть
+  if (photos.length > 0) {
+    html += `<div style="margin-top:20px; page-break-before: always;">
+      <div class="section-title">Приложение: фотоматериалы</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">`;
+    photos.forEach(p => {
+      html += `<div style="border:1px solid #000; padding:5px;"><img src="${p}" style="width:100%; display:block;"></div>`;
+    });
+    html += `</div></div>`;
+  }
+
+  document.getElementById('docPreview').innerHTML = html;
 }
 
 function clearForm() {
-  if (!confirm('Очистить форму?')) return;
+  if (!confirm('Очистить форму и фото?')) return;
   const doc = DOCS[currentDoc];
   doc.fields.forEach(f => {
     const el = document.getElementById('f_' + f.id);
     if (el) el.value = '';
   });
+  photos = [];
+  renderPhotos();
   localStorage.removeItem('doc_' + currentDoc);
-  renderPreview();
 }
 
+function handlePhotos(event) {
+  const files = event.target.files;
+  for (let i = 0; i < files.length; i++) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      photos.push(e.target.result);
+      renderPhotos();
+    };
+    reader.readAsDataURL(files[i]);
+  }
+  event.target.value = '';
+}
+
+function renderPhotos() {
+  const grid = document.getElementById('photoGrid');
+  grid.innerHTML = '';
+  photos.forEach((src, i) => {
+    const div = document.createElement('div');
+    div.className = 'photo-item';
+    div.innerHTML = `<img src="${src}"><button class="remove" onclick="removePhoto(${i})">×</button>`;
+    grid.appendChild(div);
+  });
+}
+
+function removePhoto(i) {
+  photos.splice(i, 1);
+  renderPhotos();
+}
+
+// ============================================================
+// ОТПРАВКА В DISCORD
+// ============================================================
+async function sendToDiscord() {
+  const btn = document.getElementById('discordBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Отправка...';
+
+  try {
+    const element = document.getElementById('docPreview');
+    const pdfBlob = await html2pdf().from(element).set({
+      margin: 10,
+      filename: currentDoc + '.pdf',
+      image: { type: 'jpeg', quality: 0.95 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    }).outputPdf('blob');
+
+    const formData = new FormData();
+    formData.append('file', pdfBlob, DOCS[currentDoc].shortName + '.pdf');
+    formData.append('payload_json', JSON.stringify({
+      content: `📄 **${DOCS[currentDoc].title}**\nОтправлено с сайта документооборота.`,
+      username: 'МВД Документооборот'
+    }));
+
+    const response = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      body: formData
+    });
+
+    if (response.ok) {
+      btn.textContent = '✅ Отправлено!';
+      setTimeout(() => { btn.textContent = '🤖 Отправить в Discord'; btn.disabled = false; }, 2000);
+    } else {
+      throw new Error('HTTP ' + response.status);
+    }
+  } catch (err) {
+    alert('Ошибка отправки: ' + err.message + '\n\nПроверь вебхук или попробуй ещё раз.');
+    btn.textContent = '🤖 Отправить в Discord';
+    btn.disabled = false;
+  }
+}
+
+// ============================================================
+// ИНИЦИАЛИЗАЦИЯ
+// ============================================================
 renderForm();
 renderPreview();
 </script>
