@@ -13,8 +13,6 @@
     display: flex;
     min-height: 100vh;
   }
-
-  /* САЙДБАР */
   .sidebar {
     width: 280px;
     background: #16162a;
@@ -59,6 +57,7 @@
     cursor: pointer;
     transition: all 0.15s;
     border-left: 3px solid transparent;
+    font-family: inherit;
   }
   .sidebar button:hover {
     background: #1e1e3a;
@@ -70,16 +69,12 @@
     border-left-color: #f0c040;
     font-weight: 500;
   }
-
-  /* ОСНОВНАЯ ЧАСТЬ */
   .main {
     flex: 1;
     display: flex;
     flex-direction: column;
     overflow: hidden;
   }
-
-  /* ПАНЕЛЬ ФОРМЫ */
   .form-panel {
     background: #16162a;
     padding: 24px 32px;
@@ -126,8 +121,6 @@
     resize: vertical;
     min-height: 70px;
   }
-
-  /* ПАНЕЛЬ ПРЕДПРОСМОТРА */
   .preview-panel {
     flex: 1;
     padding: 32px;
@@ -188,9 +181,6 @@
     margin: 8px 0;
     font-size: 11pt;
   }
-  .document .small { font-size: 10pt; color: #333; }
-
-  /* КНОПКИ */
   .actions {
     padding: 16px 32px;
     background: #16162a;
@@ -243,7 +233,6 @@
 </head>
 <body>
 
-<!-- САЙДБАР -->
 <div class="sidebar">
   <div class="logo">
     <h1>📋 Документооборот</h1>
@@ -266,7 +255,6 @@
   <button class="nav-btn" data-doc="our-report" onclick="switchDoc('our-report')">Рапорт о работе</button>
 </div>
 
-<!-- ОСНОВНАЯ ЧАСТЬ -->
 <div class="main">
   <div class="form-panel" id="formPanel">
     <h2 id="formTitle">Заполнение</h2>
@@ -284,22 +272,17 @@
 </div>
 
 <script>
-// ============================================================
-// ДОКУМЕНТЫ (по приказу МВД № 264 от 02.05.2023)
-// ============================================================
-
 const DOCS = {
-  // ===== ППСП =====
   'pps-journal': {
     title: 'Бортовой журнал автопатруля',
     fields: [
       { id: 'date', label: 'Дата', type: 'date' },
       { id: 'time_start', label: 'Начало службы', type: 'time' },
       { id: 'time_end', label: 'Окончание', type: 'time' },
-      { id: 'senior', label: 'Старший наряда (ФИО, звание)', type: 'text', full: true },
-      { id: 'officer', label: 'Полицейский (ФИО, звание)', type: 'text', full: true },
-      { id: 'driver', label: 'Полицейский-водитель (ФИО, звание)', type: 'text', full: true },
-      { id: 'car', label: 'Автомобиль (марка)', type: 'text' },
+      { id: 'senior', label: 'Старший наряда', type: 'text', full: true },
+      { id: 'officer', label: 'Полицейский', type: 'text', full: true },
+      { id: 'driver', label: 'Полицейский-водитель', type: 'text', full: true },
+      { id: 'car', label: 'Автомобиль', type: 'text' },
       { id: 'plate', label: 'Гос. номер', type: 'text' },
       { id: 'notes', label: 'Примечания', type: 'textarea', full: true }
     ],
@@ -314,7 +297,7 @@ const DOCS = {
       <div class="line">Полицейский-водитель: <span class="field" style="min-width:300px;">${d.driver||'________________'}</span></div>
       <div class="line">Автомобиль: <span class="field" style="min-width:160px;">${d.car||'________'}</span>, знак: <span class="field" style="min-width:100px;">${d.plate||'______'}</span></div>
       <div class="section-title">Примечания:</div>
-      <div class="box">${(d.notes||'').replace(/\\n/g,'<br>')||'&nbsp;'}</div>
+      <div class="box">${(d.notes||'').replace(/\n/g,'<br>')||'&nbsp;'}</div>
     `
   },
 
@@ -324,12 +307,12 @@ const DOCS = {
       { id: 'date', label: 'Дата', type: 'date' },
       { id: 'time', label: 'Время', type: 'time' },
       { id: 'place', label: 'Место составления', type: 'text', full: true },
-      { id: 'officer', label: 'Кто составил (должность, звание, ФИО)', type: 'text', full: true },
+      { id: 'officer', label: 'Кто составил', type: 'text', full: true },
       { id: 'detainee', label: 'Задержанный (ФИО)', type: 'text', full: true },
       { id: 'birth', label: 'Дата и место рождения', type: 'text', full: true },
       { id: 'address', label: 'Место жительства', type: 'text', full: true },
       { id: 'reason', label: 'Основание задержания', type: 'textarea', full: true },
-      { id: 'witnesses', label: 'Понятые (ФИО, адрес)', type: 'textarea', full: true }
+      { id: 'witnesses', label: 'Понятые', type: 'textarea', full: true }
     ],
     render: (d) => `
       <h2>ПРОТОКОЛ</h2>
@@ -363,8 +346,8 @@ const DOCS = {
       { id: 'person', label: 'Досматриваемый (ФИО)', type: 'text', full: true },
       { id: 'address', label: 'Место жительства', type: 'text', full: true },
       { id: 'reason', label: 'Основание досмотра', type: 'textarea', full: true },
-      { id: 'found', label: 'Обнаружено при досмотре', type: 'textarea', full: true },
-      { id: 'witnesses', label: 'Понятые (ФИО, адрес)', type: 'textarea', full: true }
+      { id: 'found', label: 'Обнаружено', type: 'textarea', full: true },
+      { id: 'witnesses', label: 'Понятые', type: 'textarea', full: true }
     ],
     render: (d) => `
       <h2>ПРОТОКОЛ</h2>
@@ -423,7 +406,6 @@ const DOCS = {
     `
   },
 
-  // ===== ДПС =====
   'dps-offense': {
     title: 'Протокол об административном правонарушении',
     fields: [
@@ -436,7 +418,7 @@ const DOCS = {
       { id: 'article', label: 'Статья КоАП', type: 'text' },
       { id: 'vehicle', label: 'ТС (марка, гос. номер)', type: 'text' },
       { id: 'desc', label: 'Суть нарушения', type: 'textarea', full: true },
-      { id: 'witnesses', label: 'Свидетели / потерпевшие', type: 'textarea', full: true }
+      { id: 'witnesses', label: 'Свидетели', type: 'textarea', full: true }
     ],
     render: (d) => `
       <h2>ПРОТОКОЛ</h2>
@@ -449,12 +431,12 @@ const DOCS = {
         проживающий(ая): <span class="field" style="min-width:250px;">${d.address||'________________'}</span>
       </div>
       <div class="line" style="margin-top:10px;">
-        управляя транспортным средством: <span class="field" style="min-width:250px;">${d.vehicle||'________________'}</span>,
-        совершил(а) нарушение, предусмотренное ст. <span class="field">${d.article||'____'}</span> КоАП РФ.
+        управляя ТС: <span class="field" style="min-width:250px;">${d.vehicle||'________________'}</span>,
+        совершил(а) нарушение по ст. <span class="field">${d.article||'____'}</span> КоАП РФ.
       </div>
       <div class="section-title">Суть нарушения:</div>
       <div class="box">${d.desc||'&nbsp;'}</div>
-      <div class="section-title">Свидетели / потерпевшие:</div>
+      <div class="section-title">Свидетели:</div>
       <div class="box">${d.witnesses||'&nbsp;'}</div>
       <div class="signature">
         Подпись нарушителя: _______________<br>
@@ -483,9 +465,7 @@ const DOCS = {
       <div class="box" style="min-height:120px;">${d.desc||'&nbsp;'}</div>
       <div class="section-title">Понятые:</div>
       <div class="box">${d.witnesses||'&nbsp;'}</div>
-      <div class="signature">
-        Подпись составителя: _______________
-      </div>
+      <div class="signature">Подпись составителя: _______________</div>
     `
   },
 
@@ -507,7 +487,7 @@ const DOCS = {
       <div class="line">«<span class="field">${d.date?d.date.split('-')[2]:'____'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> <span class="field">${d.date?d.date.split('-')[0]:'____'}</span> г. <span class="field">${d.time||'__:__'}</span></div>
       <div class="line">Место: <span class="field" style="min-width:300px;">${d.place||'________________'}</span></div>
       <div class="indent" style="margin-top:16px;">
-        Я, <span class="field" style="min-width:300px;">${d.officer||'________________'}</span>, составил настоящий протокол об отстранении от управления транспортным средством гражданина(ки)
+        Я, <span class="field" style="min-width:300px;">${d.officer||'________________'}</span>, составил настоящий протокол об отстранении от управления ТС гражданина(ки)
         <span class="field" style="min-width:250px;">${d.driver||'________________'}</span>,
         управлявшего ТС: <span class="field" style="min-width:250px;">${d.vehicle||'________________'}</span>
       </div>
@@ -522,7 +502,6 @@ const DOCS = {
     `
   },
 
-  // ===== ОУР =====
   'our-wanted': {
     title: 'Разыскная ориентировка',
     fields: [
@@ -545,9 +524,7 @@ const DOCS = {
       <div class="box">${d.appearance||'&nbsp;'}</div>
       <div class="section-title">Особые приметы / одежда:</div>
       <div class="box">${d.clothes||'&nbsp;'}</div>
-      <div class="signature">
-        Составил: _______________
-      </div>
+      <div class="signature">Составил: _______________</div>
     `
   },
 
@@ -557,4 +534,89 @@ const DOCS = {
       { id: 'to', label: 'Кому (должность, звание)', type: 'text', full: true },
       { id: 'officer', label: 'От (должность, звание, ФИО)', type: 'text', full: true },
       { id: 'period', label: 'Период', type: 'text' },
-      { id: 'work', label: 'Проделанная работа', type: 'textarea
+      { id: 'work', label: 'Проделанная работа', type: 'textarea', full: true }
+    ],
+    render: (d) => `
+      <div style="text-align:right; margin-bottom:24px;">
+        ${d.to||'Начальнику ОУР'}<br>
+        от ${d.officer||'________________'}
+      </div>
+      <h2>РАПОРТ</h2>
+      <div class="indent">
+        Докладываю Вам, что за период <span class="field">${d.period||'________________'}</span> мною была проделана следующая работа:
+      </div>
+      <div class="box" style="min-height:150px; margin-top:12px;">${(d.work||'').replace(/\n/g,'<br>')||'&nbsp;'}</div>
+      <div class="signature">
+        Дата: «____» ______________ 20___ г.<br><br>
+        Подпись: _______________
+      </div>
+    `
+  }
+};
+
+let currentDoc = 'pps-journal';
+
+function switchDoc(id) {
+  currentDoc = id;
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.querySelector(`[data-doc="${id}"]`);
+  if (btn) btn.classList.add('active');
+  renderForm();
+  renderPreview();
+}
+
+function renderForm() {
+  const doc = DOCS[currentDoc];
+  document.getElementById('formTitle').textContent = doc.title;
+  const grid = document.getElementById('formGrid');
+  grid.innerHTML = '';
+
+  doc.fields.forEach(f => {
+    const div = document.createElement('div');
+    div.className = 'form-group' + (f.full ? ' full' : '');
+    div.innerHTML = `
+      <label>${f.label}</label>
+      ${f.type === 'textarea'
+        ? `<textarea id="f_${f.id}" oninput="renderPreview()"></textarea>`
+        : `<input type="${f.type}" id="f_${f.id}" oninput="renderPreview()">`}
+    `;
+    grid.appendChild(div);
+  });
+
+  const saved = localStorage.getItem('doc_' + currentDoc);
+  if (saved) {
+    const data = JSON.parse(saved);
+    doc.fields.forEach(f => {
+      const el = document.getElementById('f_' + f.id);
+      if (el && data[f.id]) el.value = data[f.id];
+    });
+  }
+}
+
+function renderPreview() {
+  const doc = DOCS[currentDoc];
+  const data = {};
+  doc.fields.forEach(f => {
+    const el = document.getElementById('f_' + f.id);
+    if (el) data[f.id] = el.value;
+  });
+  localStorage.setItem('doc_' + currentDoc, JSON.stringify(data));
+  document.getElementById('docPreview').innerHTML = doc.render(data);
+}
+
+function clearForm() {
+  if (!confirm('Очистить форму?')) return;
+  const doc = DOCS[currentDoc];
+  doc.fields.forEach(f => {
+    const el = document.getElementById('f_' + f.id);
+    if (el) el.value = '';
+  });
+  localStorage.removeItem('doc_' + currentDoc);
+  renderPreview();
+}
+
+renderForm();
+renderPreview();
+</script>
+</body>
+</html>
