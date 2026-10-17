@@ -288,10 +288,9 @@
 const WEBHOOK_URL = "https://discord.com/api/webhooks/1560636556673552506/qkn1vrm5MoB-miSHONFaqqxU0YNtLe3xaQ0QpZDu08CnuqNJepDjEyWV1TYkXp7rQofG";
 
 // ============================================================
-// ДОКУМЕНТЫ (Основные)
+// ДОКУМЕНТЫ
 // ============================================================
 const DOCS = {
-  const DOCS = {
   // ===== СУ =====
   'su-arrest': {
     title: 'Постановление о возбуждении уголовного дела', shortName: 'Возбуждение УД', dept: 'СУ',
@@ -1067,9 +1066,6 @@ const DOCS = {
     `
   }
 };
-};
-
-// ПРИМЕЧАНИЕ ДЛЯ ТЕБЯ: Скопируй блок const DOCS = { ... }; из предыдущего полного кода.
 
 let currentDoc = 'pps-journal';
 let photos = [];
@@ -1178,13 +1174,9 @@ function generateGosznak() {
   
   // ================= ПАСПОРТ =================
   if (type === 'passport_full') {
-    // ВНИМАНИЕ: Здесь используется SVG для создания эффекта бланка (сетка, герб).
-    // Если захочешь свою картинку, замени этот блок на <img src="твоя_картинка" style="position:absolute; inset:0; width:100%; height:100%;">
-    
     html = `
       <div style="position: relative; width: 125mm; height: 88mm; background: #fdf5e6; border: 1px solid #8b0000; font-family: 'Times New Roman', serif; color: #000; overflow: hidden; padding: 5mm; box-sizing: border-box;">
         
-        <!-- Имитация водяного знака и сетки (SVG) -->
         <svg style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.1;" xmlns="http://www.w3.org/2000/svg">
           <pattern id="waves" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
             <path d="M0 20 Q10 0 20 20 T40 20" fill="none" stroke="#8b0000" stroke-width="1"/>
@@ -1193,7 +1185,6 @@ function generateGosznak() {
           <rect width="100%" height="100%" fill="url(#waves)"/>
         </svg>
 
-        <!-- Верхняя часть -->
         <div style="text-align:center; letter-spacing: 2px; font-size: 10pt; margin-bottom: 2mm; position:relative;">Р О С С И Й С К А Я   Ф Е Д Е Р А Ц И Я</div>
         
         <div style="position: relative; display: flex; justify-content: space-between; margin-bottom: 2mm; font-size: 8pt;">
@@ -1214,10 +1205,8 @@ function generateGosznak() {
           <div style="width: 25%; text-align: center;">${data['gz-p3'] || ''}</div>
         </div>
 
-        <!-- Место для печати -->
         <div style="position: absolute; top: 35mm; left: 35mm; width: 30mm; height: 30mm; border: 1px dashed #999; border-radius: 50%; color: #999; font-size: 7pt; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg);">ПЕЧАТЬ МВД</div>
 
-        <!-- Нижняя часть с фото -->
         <div style="position: relative; display: flex; gap: 3mm; margin-top: 2mm;">
           <div style="width: 35mm; height: 45mm; border: 1px solid #000; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 8pt; color: #999;">
             ${gzPhoto ? `<img src="${gzPhoto}" style="width:100%; height:100%; object-fit:cover;">` : 'ФОТО'}
@@ -1239,7 +1228,6 @@ function generateGosznak() {
     html = `
       <div style="position: relative; width: 125mm; height: 88mm; background: #f0f8f0; border: 2px solid #4a7c59; font-family: 'Times New Roman', serif; color: #000; overflow: hidden; padding: 5mm; box-sizing: border-box;">
         
-        <!-- Сетка СНИЛС -->
         <svg style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.1;" xmlns="http://www.w3.org/2000/svg">
           <pattern id="dots" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
             <circle cx="5" cy="5" r="1" fill="#4a7c59"/>
@@ -1261,7 +1249,6 @@ function generateGosznak() {
         
         <div style="position: relative; display: flex; margin-bottom: 2mm; font-size: 10pt;"><span style="width: 30mm; font-size: 8pt; color: #555;">Дата регистрации</span> <span style="border-bottom: 1px solid #000; flex: 1; font-weight: bold;">${data['gz-s8'] || ''}</span></div>
         
-        <!-- Заглушка для гильоширного знака -->
         <div style="position: absolute; bottom: 8mm; right: 10mm; width: 30mm; height: 30mm; border: 1px dashed #4a7c59; border-radius: 50%; color: #4a7c59; text-align: center; line-height: 30mm; font-size: 7pt; opacity: 0.5;">ЗНАК</div>
       </div>
     `;
@@ -1280,7 +1267,7 @@ function clearGosznak() {
 }
 
 // ============================================================
-// ОСНОВНАЯ ЛОГИКА (без изменений, но нужна для работы)
+// ОСНОВНАЯ ЛОГИКА
 // ============================================================
 
 function toggleMenu(e) {
@@ -1475,9 +1462,6 @@ async function sendToDiscord() {
     btn.disabled = false;
   }
 }
-
-// ТАМ ГДЕ ДОЛЖЕН БЫТЬ БЛОК DOCS, ВСТАВЬ ЕГО ИЗ ПРЕДЫДУЩЕГО КОДА
-// (Поскольку он огромный, я не стал дублировать его здесь, но в твоем файле он должен быть).
 
 renderForm();
 renderPreview();
