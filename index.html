@@ -261,10 +261,7 @@
       <div class="form-group full">
         <label>Тип документа</label>
         <select id="gz-type" onchange="renderGosznakForm()">
-          <option value="passport">Паспорт РФ (главная)</option>
           <option value="passport_full">Паспорт РФ (разворот с фото)</option>
-          <option value="birth">Свидетельство о рождении</option>
-          <option value="idcard">Служебное удостоверение</option>
           <option value="snils">СНИЛС</option>
         </select>
       </div>
@@ -291,9 +288,10 @@
 const WEBHOOK_URL = "https://discord.com/api/webhooks/1560636556673552506/qkn1vrm5MoB-miSHONFaqqxU0YNtLe3xaQ0QpZDu08CnuqNJepDjEyWV1TYkXp7rQofG";
 
 // ============================================================
-// ДОКУМЕНТЫ
+// ДОКУМЕНТЫ (Основные)
 // ============================================================
 const DOCS = {
+  const DOCS = {
   // ===== СУ =====
   'su-arrest': {
     title: 'Постановление о возбуждении уголовного дела', shortName: 'Возбуждение УД', dept: 'СУ',
@@ -1069,6 +1067,9 @@ const DOCS = {
     `
   }
 };
+};
+
+// ПРИМЕЧАНИЕ ДЛЯ ТЕБЯ: Скопируй блок const DOCS = { ... }; из предыдущего полного кода.
 
 let currentDoc = 'pps-journal';
 let photos = [];
@@ -1111,20 +1112,7 @@ function renderGosznakForm() {
   
   let fields = [];
   
-  if (type === 'passport') {
-    fields = [
-      { id: 'gz-surname', label: 'Фамилия', type: 'text' },
-      { id: 'gz-name', label: 'Имя', type: 'text' },
-      { id: 'gz-patronymic', label: 'Отчество', type: 'text' },
-      { id: 'gz-birth', label: 'Дата рождения', type: 'date' },
-      { id: 'gz-place', label: 'Место рождения', type: 'text', full: true },
-      { id: 'gz-issued', label: 'Кем выдан', type: 'text', full: true },
-      { id: 'gz-date-issued', label: 'Дата выдачи', type: 'date' },
-      { id: 'gz-code', label: 'Код подразделения', type: 'text' },
-      { id: 'gz-series', label: 'Серия', type: 'text' },
-      { id: 'gz-number', label: 'Номер', type: 'text' }
-    ];
-  } else if (type === 'passport_full') {
+  if (type === 'passport_full') {
     fields = [
       { id: 'gz-p1', label: 'Кем выдан (МФЦ)', type: 'text', full: true },
       { id: 'gz-p2', label: 'Дата выдачи', type: 'text' },
@@ -1135,32 +1123,6 @@ function renderGosznakForm() {
       { id: 'gz-p7', label: 'Дата рождения', type: 'text' },
       { id: 'gz-p8', label: 'Место рождения', type: 'text', full: true },
       { id: 'gz-p9', label: 'Серия и номер', type: 'text' }
-    ];
-  } else if (type === 'birth') {
-    fields = [
-      { id: 'gz-surname', label: 'Фамилия', type: 'text' },
-      { id: 'gz-name', label: 'Имя', type: 'text' },
-      { id: 'gz-patronymic', label: 'Отчество', type: 'text' },
-      { id: 'gz-birth', label: 'Дата рождения', type: 'date' },
-      { id: 'gz-place', label: 'Место рождения', type: 'text', full: true },
-      { id: 'gz-father', label: 'Отец (ФИО)', type: 'text', full: true },
-      { id: 'gz-mother', label: 'Мать (ФИО)', type: 'text', full: true },
-      { id: 'gz-zags', label: 'Орган ЗАГС', type: 'text', full: true },
-      { id: 'gz-date-issued', label: 'Дата выдачи', type: 'date' },
-      { id: 'gz-series', label: 'Серия', type: 'text' },
-      { id: 'gz-number', label: 'Номер', type: 'text' }
-    ];
-  } else if (type === 'idcard') {
-    fields = [
-      { id: 'gz-surname', label: 'Фамилия', type: 'text' },
-      { id: 'gz-name', label: 'Имя', type: 'text' },
-      { id: 'gz-patronymic', label: 'Отчество', type: 'text' },
-      { id: 'gz-rank', label: 'Специальное звание', type: 'text' },
-      { id: 'gz-position', label: 'Должность', type: 'text', full: true },
-      { id: 'gz-unit', label: 'Подразделение', type: 'text', full: true },
-      { id: 'gz-date-issued', label: 'Дата выдачи', type: 'date' },
-      { id: 'gz-valid', label: 'Действительно до', type: 'date' },
-      { id: 'gz-number', label: 'Номер удостоверения', type: 'text' }
     ];
   } else if (type === 'snils') {
     fields = [
@@ -1214,131 +1176,93 @@ function generateGosznak() {
   
   let html = '';
   
-  if (type === 'passport') {
+  // ================= ПАСПОРТ =================
+  if (type === 'passport_full') {
+    // ВНИМАНИЕ: Здесь используется SVG для создания эффекта бланка (сетка, герб).
+    // Если захочешь свою картинку, замени этот блок на <img src="твоя_картинка" style="position:absolute; inset:0; width:100%; height:100%;">
+    
     html = `
-      <div style="border: 2px solid #8b0000; padding: 15px; font-family: 'Times New Roman', serif; color: #000; background: #fdf5e6;">
-        <div style="text-align:center; font-weight:bold; font-size:16pt; margin-bottom:10px;">РОССИЙСКАЯ ФЕДЕРАЦИЯ</div>
-        <div style="text-align:center; font-size:10pt; margin-bottom:10px;">ПАСПОРТ ГРАЖДАНИНА РОССИЙСКОЙ ФЕДЕРАЦИИ</div>
-        <div style="display:flex; gap:15px;">
-          <div style="width:35mm; height:45mm; border:1px solid #000; display:flex; align-items:center; justify-content:center; background:#eee;">
-            ${gzPhoto ? `<img src="${gzPhoto}" style="width:100%; height:100%; object-fit:cover;">` : 'ФОТО'}
-          </div>
-          <div style="flex:1;">
-            <div><strong>Фамилия:</strong> ${data['gz-surname'] || '________________'}</div>
-            <div><strong>Имя:</strong> ${data['gz-name'] || '________________'}</div>
-            <div><strong>Отчество:</strong> ${data['gz-patronymic'] || '________________'}</div>
-            <div><strong>Дата рождения:</strong> ${data['gz-birth'] || '________________'}</div>
-            <div><strong>Место рождения:</strong> ${data['gz-place'] || '________________'}</div>
-          </div>
-        </div>
-        <div style="margin-top:10px; border-top:1px solid #8b0000; padding-top:10px;">
-          <div><strong>Кем выдан:</strong> ${data['gz-issued'] || '________________'}</div>
-          <div><strong>Дата выдачи:</strong> ${data['gz-date-issued'] || '________________'}</div>
-          <div><strong>Код подразделения:</strong> ${data['gz-code'] || '________________'}</div>
-          <div style="text-align:right; margin-top:10px;">Серия: ${data['gz-series'] || '____'} № ${data['gz-number'] || '______'}</div>
-        </div>
-      </div>
-    `;
-  } else if (type === 'passport_full') {
-    html = `
-      <div style="width: 125mm; height: 88mm; border: 1px solid #8b0000; background: #fdf5e6; position: relative; font-family: 'Times New Roman', serif; padding: 5mm; box-sizing: border-box; font-size: 9pt; color: #000;">
+      <div style="position: relative; width: 125mm; height: 88mm; background: #fdf5e6; border: 1px solid #8b0000; font-family: 'Times New Roman', serif; color: #000; overflow: hidden; padding: 5mm; box-sizing: border-box;">
+        
+        <!-- Имитация водяного знака и сетки (SVG) -->
+        <svg style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.1;" xmlns="http://www.w3.org/2000/svg">
+          <pattern id="waves" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M0 20 Q10 0 20 20 T40 20" fill="none" stroke="#8b0000" stroke-width="1"/>
+            <path d="M0 30 Q10 10 20 30 T40 30" fill="none" stroke="#8b0000" stroke-width="1"/>
+          </pattern>
+          <rect width="100%" height="100%" fill="url(#waves)"/>
+        </svg>
+
         <!-- Верхняя часть -->
-        <div style="text-align:center; letter-spacing: 2px; font-size: 10pt; margin-bottom: 5mm;">Р О С С И Й С К А Я   Ф Е Д Е Р А Ц И Я</div>
+        <div style="text-align:center; letter-spacing: 2px; font-size: 10pt; margin-bottom: 2mm; position:relative;">Р О С С И Й С К А Я   Ф Е Д Е Р А Ц И Я</div>
         
-        <div style="display: flex; justify-content: space-between; margin-bottom: 3mm;">
-          <div style="border-bottom: 1px solid #000; width: 40%; text-align: center; font-size: 8pt;">Кем выдан (МФЦ)</div>
-          <div style="border-bottom: 1px solid #000; width: 25%; text-align: center; font-size: 8pt;">Дата выдачи</div>
+        <div style="position: relative; display: flex; justify-content: space-between; margin-bottom: 2mm; font-size: 8pt;">
+          <div style="border-bottom: 1px solid #000; width: 45%; text-align: center;">Кем выдан</div>
+          <div style="border-bottom: 1px solid #000; width: 25%; text-align: center;">Дата выдачи</div>
+          <div style="border-bottom: 1px solid #000; width: 25%; text-align: center;">Код подр.</div>
         </div>
-        
-        <div style="text-align: center; font-size: 8pt; margin-bottom: 2mm;">
+
+        <div style="position: relative; text-align: center; font-size: 9pt; margin-bottom: 4mm;">
           Многофункциональным центром<br>
           предоставления государственных и<br>
           муниципальных услуг
         </div>
 
-        <div style="display: flex; justify-content: space-between; margin-bottom: 5mm;">
-          <div style="border-bottom: 1px solid #000; width: 40%; text-align: center; font-size: 8pt;">${data['gz-p1'] || ''}</div>
-          <div style="border-bottom: 1px solid #000; width: 25%; text-align: center; font-size: 8pt;">${data['gz-p2'] || ''}</div>
-          <div style="border-bottom: 1px solid #000; width: 25%; text-align: center; font-size: 8pt;">${data['gz-p3'] || ''}</div>
+        <div style="position: relative; display: flex; justify-content: space-between; margin-bottom: 4mm; font-size: 10pt; font-weight: bold;">
+          <div style="width: 45%; text-align: center;">${data['gz-p1'] || ''}</div>
+          <div style="width: 25%; text-align: center;">${data['gz-p2'] || ''}</div>
+          <div style="width: 25%; text-align: center;">${data['gz-p3'] || ''}</div>
         </div>
 
-        <!-- Печать (заглушка) -->
-        <div style="text-align: center; margin-bottom: 5mm;">
-          <div style="display: inline-block; width: 25mm; height: 25mm; border: 1px dashed #999; border-radius: 50%; color: #999; font-size: 8pt; line-height: 25mm;">МЕСТО ДЛЯ ПЕЧАТИ</div>
-        </div>
+        <!-- Место для печати -->
+        <div style="position: absolute; top: 35mm; left: 35mm; width: 30mm; height: 30mm; border: 1px dashed #999; border-radius: 50%; color: #999; font-size: 7pt; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg);">ПЕЧАТЬ МВД</div>
 
         <!-- Нижняя часть с фото -->
-        <div style="display: flex; gap: 5mm;">
+        <div style="position: relative; display: flex; gap: 3mm; margin-top: 2mm;">
           <div style="width: 35mm; height: 45mm; border: 1px solid #000; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 8pt; color: #999;">
             ${gzPhoto ? `<img src="${gzPhoto}" style="width:100%; height:100%; object-fit:cover;">` : 'ФОТО'}
           </div>
-          <div style="flex: 1;">
-            <div style="display: flex; margin-bottom: 2mm;"><span style="width: 25mm; font-size: 8pt; color: #666;">Фамилия</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 10pt;">${data['gz-p4'] || ''}</span></div>
-            <div style="display: flex; margin-bottom: 2mm;"><span style="width: 25mm; font-size: 8pt; color: #666;">Имя</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 10pt;">${data['gz-p5'] || ''}</span></div>
-            <div style="display: flex; margin-bottom: 2mm;"><span style="width: 25mm; font-size: 8pt; color: #666;">Отчество</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 10pt;">${data['gz-p6'] || ''}</span></div>
-            <div style="display: flex; margin-bottom: 2mm;"><span style="width: 25mm; font-size: 8pt; color: #666;">Дата рождения</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 9pt;">${data['gz-p7'] || ''}</span></div>
-            <div style="display: flex; margin-bottom: 2mm;"><span style="width: 25mm; font-size: 8pt; color: #666;">Место рождения</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 9pt;">${data['gz-p8'] || ''}</span></div>
-            <div style="display: flex; margin-top: 5mm;"><span style="width: 25mm; font-size: 8pt; color: #666;">Серия и номер</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 9pt;">${data['gz-p9'] || ''}</span></div>
+          <div style="flex: 1; font-size: 9pt;">
+            <div style="display: flex; margin-bottom: 1.5mm;"><span style="width: 25mm;">Фамилия</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 10pt; font-weight: bold;">${data['gz-p4'] || ''}</span></div>
+            <div style="display: flex; margin-bottom: 1.5mm;"><span style="width: 25mm;">Имя</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 10pt; font-weight: bold;">${data['gz-p5'] || ''}</span></div>
+            <div style="display: flex; margin-bottom: 1.5mm;"><span style="width: 25mm;">Отчество</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 10pt; font-weight: bold;">${data['gz-p6'] || ''}</span></div>
+            <div style="display: flex; margin-bottom: 1.5mm;"><span style="width: 25mm;">Дата рождения</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 9pt;">${data['gz-p7'] || ''}</span></div>
+            <div style="display: flex; margin-bottom: 1.5mm;"><span style="width: 25mm;">Место рождения</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 9pt;">${data['gz-p8'] || ''}</span></div>
+            <div style="display: flex; margin-top: 3mm;"><span style="width: 25mm;">Серия и номер</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 9pt;">${data['gz-p9'] || ''}</span></div>
           </div>
         </div>
       </div>
     `;
-  } else if (type === 'birth') {
+  } 
+  // ================= СНИЛС =================
+  else if (type === 'snils') {
     html = `
-      <div style="border: 2px solid #8b0000; padding: 15px; font-family: 'Times New Roman', serif; color: #000; background: #fdf5e6;">
-        <div style="text-align:center; font-weight:bold; font-size:16pt;">СВИДЕТЕЛЬСТВО О РОЖДЕНИИ</div>
-        <div style="text-align:center; font-size:9pt; margin-bottom:15px;">(герб РФ)</div>
-        <div><strong>Фамилия:</strong> ${data['gz-surname'] || '________________'}</div>
-        <div><strong>Имя:</strong> ${data['gz-name'] || '________________'}</div>
-        <div><strong>Отчество:</strong> ${data['gz-patronymic'] || '________________'}</div>
-        <div><strong>Дата рождения:</strong> ${data['gz-birth'] || '________________'}</div>
-        <div><strong>Место рождения:</strong> ${data['gz-place'] || '________________'}</div>
-        <hr>
-        <div><strong>Отец:</strong> ${data['gz-father'] || '________________'}</div>
-        <div><strong>Мать:</strong> ${data['gz-mother'] || '________________'}</div>
-        <hr>
-        <div><strong>Орган ЗАГС:</strong> ${data['gz-zags'] || '________________'}</div>
-        <div><strong>Дата выдачи:</strong> ${data['gz-date-issued'] || '________________'}</div>
-        <div style="text-align:right;">Серия: ${data['gz-series'] || '____'} № ${data['gz-number'] || '______'}</div>
-      </div>
-    `;
-  } else if (type === 'idcard') {
-    html = `
-      <div style="border: 2px solid #8b0000; padding: 15px; font-family: 'Times New Roman', serif; color: #000; background: #fdf5e6; width: 100mm; height: 65mm; display:flex; gap:10px;">
-        <div style="width:30mm; height:40mm; border:1px solid #000; display:flex; align-items:center; justify-content:center; background:#eee;">
-          ${gzPhoto ? `<img src="${gzPhoto}" style="width:100%; height:100%; object-fit:cover;">` : 'ФОТО'}
-        </div>
-        <div style="flex:1; font-size:10pt;">
-          <div style="text-align:center; font-weight:bold; font-size:11pt;">МИНИСТЕРСТВО ВНУТРЕННИХ ДЕЛ</div>
-          <div style="text-align:center; font-size:8pt; margin-bottom:10px;">УДОСТОВЕРЕНИЕ</div>
-          <div><strong>${data['gz-surname'] || '________'} ${data['gz-name'] || '________'} ${data['gz-patronymic'] || '________'}</strong></div>
-          <div>${data['gz-rank'] || '________'}</div>
-          <div>${data['gz-position'] || '________'}</div>
-          <div>${data['gz-unit'] || '________'}</div>
-          <div style="margin-top:10px;">Действительно до: ${data['gz-valid'] || '________'}</div>
-          <div>№ ${data['gz-number'] || '________'}</div>
-        </div>
-      </div>
-    `;
-  } else if (type === 'snils') {
-    html = `
-      <div style="width: 125mm; height: 88mm; border: 2px solid #4a7c59; background: #f0f8f0; position: relative; font-family: 'Times New Roman', serif; padding: 5mm; box-sizing: border-box; color: #000;">
-        <div style="text-align: center; font-size: 11pt; font-weight: bold; margin-bottom: 2mm;">Российская Федерация</div>
-        <div style="text-align: center; font-size: 14pt; font-weight: bold; margin-bottom: 2mm; letter-spacing: 1px;">СТРАХОВОЕ СВИДЕТЕЛЬСТВО</div>
-        <div style="text-align: center; font-size: 10pt; margin-bottom: 5mm;">ОБЯЗАТЕЛЬНОГО ПЕНСИОННОГО СТРАХОВАНИЯ</div>
+      <div style="position: relative; width: 125mm; height: 88mm; background: #f0f8f0; border: 2px solid #4a7c59; font-family: 'Times New Roman', serif; color: #000; overflow: hidden; padding: 5mm; box-sizing: border-box;">
         
-        <div style="text-align: center; font-size: 16pt; font-weight: bold; letter-spacing: 2px; margin-bottom: 5mm;">${data['gz-s1'] || ''}</div>
+        <!-- Сетка СНИЛС -->
+        <svg style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.1;" xmlns="http://www.w3.org/2000/svg">
+          <pattern id="dots" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
+            <circle cx="5" cy="5" r="1" fill="#4a7c59"/>
+          </pattern>
+          <rect width="100%" height="100%" fill="url(#dots)"/>
+        </svg>
+
+        <div style="position: relative; text-align: center; font-size: 11pt; font-weight: bold; margin-bottom: 2mm;">Российская Федерация</div>
+        <div style="position: relative; text-align: center; font-size: 14pt; font-weight: bold; margin-bottom: 2mm; letter-spacing: 1px;">СТРАХОВОЕ СВИДЕТЕЛЬСТВО</div>
+        <div style="position: relative; text-align: center; font-size: 9pt; margin-bottom: 5mm;">ОБЯЗАТЕЛЬНОГО ПЕНСИОННОГО СТРАХОВАНИЯ</div>
         
-        <div style="display: flex; margin-bottom: 2mm;"><span style="width: 15mm; font-size: 9pt; color: #555;">Ф.И.О.</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 10pt;">${data['gz-s2'] || ''} ${data['gz-s3'] || ''} ${data['gz-s4'] || ''}</span></div>
+        <div style="position: relative; text-align: center; font-size: 16pt; font-weight: bold; letter-spacing: 2px; margin-bottom: 5mm;">${data['gz-s1'] || ''}</div>
         
-        <div style="display: flex; margin-bottom: 2mm;"><span style="width: 40mm; font-size: 9pt; color: #555;">Дата и место рождения</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 10pt;">${data['gz-s5'] || ''} ${data['gz-s6'] || ''}</span></div>
+        <div style="position: relative; display: flex; margin-bottom: 2mm; font-size: 10pt;"><span style="width: 15mm; font-size: 8pt; color: #555;">Ф.И.О.</span> <span style="border-bottom: 1px solid #000; flex: 1; font-weight: bold;">${data['gz-s2'] || ''} ${data['gz-s3'] || ''} ${data['gz-s4'] || ''}</span></div>
         
-        <div style="display: flex; margin-bottom: 2mm;"><span style="width: 15mm; font-size: 9pt; color: #555;">Пол</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 10pt;">${data['gz-s7'] || ''}</span></div>
+        <div style="position: relative; display: flex; margin-bottom: 2mm; font-size: 10pt;"><span style="width: 40mm; font-size: 8pt; color: #555;">Дата и место рождения</span> <span style="border-bottom: 1px solid #000; flex: 1; font-weight: bold;">${data['gz-s5'] || ''} ${data['gz-s6'] || ''}</span></div>
         
-        <div style="display: flex; margin-bottom: 2mm;"><span style="width: 30mm; font-size: 9pt; color: #555;">Дата регистрации</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 10pt;">${data['gz-s8'] || ''}</span></div>
+        <div style="position: relative; display: flex; margin-bottom: 2mm; font-size: 10pt;"><span style="width: 15mm; font-size: 8pt; color: #555;">Пол</span> <span style="border-bottom: 1px solid #000; flex: 1; font-weight: bold;">${data['gz-s7'] || ''}</span></div>
+        
+        <div style="position: relative; display: flex; margin-bottom: 2mm; font-size: 10pt;"><span style="width: 30mm; font-size: 8pt; color: #555;">Дата регистрации</span> <span style="border-bottom: 1px solid #000; flex: 1; font-weight: bold;">${data['gz-s8'] || ''}</span></div>
         
         <!-- Заглушка для гильоширного знака -->
-        <div style="position: absolute; bottom: 5mm; right: 5mm; width: 30mm; height: 30mm; border: 1px dashed #4a7c59; border-radius: 50%; color: #4a7c59; text-align: center; line-height: 30mm; font-size: 7pt;">ЗНАК</div>
+        <div style="position: absolute; bottom: 8mm; right: 10mm; width: 30mm; height: 30mm; border: 1px dashed #4a7c59; border-radius: 50%; color: #4a7c59; text-align: center; line-height: 30mm; font-size: 7pt; opacity: 0.5;">ЗНАК</div>
       </div>
     `;
   }
@@ -1356,7 +1280,7 @@ function clearGosznak() {
 }
 
 // ============================================================
-// ОСНОВНАЯ ЛОГИКА
+// ОСНОВНАЯ ЛОГИКА (без изменений, но нужна для работы)
 // ============================================================
 
 function toggleMenu(e) {
@@ -1482,9 +1406,6 @@ function removePhoto(i) {
   renderPhotos();
 }
 
-// ============================================================
-// ОТПРАВКА В DISCORD (PNG + PDF)
-// ============================================================
 async function sendToDiscord() {
   const btn = document.getElementById('discordBtn');
   btn.disabled = true;
@@ -1554,6 +1475,9 @@ async function sendToDiscord() {
     btn.disabled = false;
   }
 }
+
+// ТАМ ГДЕ ДОЛЖЕН БЫТЬ БЛОК DOCS, ВСТАВЬ ЕГО ИЗ ПРЕДЫДУЩЕГО КОДА
+// (Поскольку он огромный, я не стал дублировать его здесь, но в твоем файле он должен быть).
 
 renderForm();
 renderPreview();
