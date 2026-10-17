@@ -69,12 +69,12 @@
     font-size: 11px; color: #7a7a9a; margin-bottom: 5px;
     text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;
   }
-  .form-group input, .form-group textarea {
+  .form-group input, .form-group textarea, .form-group select {
     padding: 9px 12px; font-size: 13px; border: 1px solid #2a2a4a;
     background: #0f0f1a; color: #e0e0e0; border-radius: 6px;
     font-family: inherit;
   }
-  .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #f0c040; }
+  .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: #f0c040; }
   .form-group textarea { resize: vertical; min-height: 70px; }
 
   .photo-block { margin-top: 24px; border-top: 1px solid #2a2a4a; padding-top: 16px; }
@@ -118,7 +118,7 @@
     min-width: 80px; padding: 0 4px; min-height: 1.2em;
   }
   .document .line { margin: 8px 0; }
-  .document .section-title { font-weight: bold; margin-top: 18px; margin-bottom: 8px; font-size: 12pt; }
+  .document .section-title { font-weight: bold; margin-top: 18px; margin-bottom: 8px; font-size: 12pt; text-align: center; }
   .document .indent { text-indent: 32px; }
   .document .signature { text-align: right; margin-top: 40px; }
   .document .box {
@@ -133,6 +133,10 @@
     margin-top: 20px; font-size: 11pt;
   }
   .document .ping-block .ping-line { margin: 4px 0; }
+  
+  /* Специфично для СУ (линии как в бланке) */
+  .su-line { border-bottom: 1px solid #000; display: inline-block; min-width: 60px; }
+  .su-full-line { border-bottom: 1px solid #000; display: block; width: 100%; height: 1.2em; margin: 4px 0; }
 
   .actions {
     padding: 14px 24px; background: #16162a;
@@ -169,7 +173,7 @@
     body { background: #fff; display: block; }
     .topbar, .actions, .dropdown { display: none !important; }
     .page { display: none !important; }
-    #page-doc { display: block !important; }
+    #page-doc, #page-gosznak { display: block !important; }
     .doc-container { padding: 0; overflow: visible; display: block; }
     .document { box-shadow: none; width: auto; min-height: auto; padding: 15mm; }
   }
@@ -185,6 +189,10 @@
 </div>
 
 <div class="dropdown" id="dropdown">
+  <div class="section-label">СУ (Следствие)</div>
+  <button class="nav-btn" data-doc="su-arrest" onclick="switchDoc('su-arrest')">Постановление о возбуждении УД</button>
+  <button class="nav-btn" data-doc="su-search" onclick="switchDoc('su-search')">Протокол осмотра места</button>
+
   <div class="section-label">ПДН</div>
   <button class="nav-btn" data-doc="pdn-register" onclick="switchDoc('pdn-register')">Постановка на учёт</button>
 
@@ -246,6 +254,35 @@
   </div>
 </div>
 
+<!-- НОВАЯ СТРАНИЦА: Госзнак (скрытая) -->
+<div class="page" id="page-gosznak">
+  <div class="form-container">
+    <h2>🏛️ Создание документов (Госзнак)</h2>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Тип документа</label>
+        <select id="gz-type" onchange="renderGosznakForm()">
+          <option value="passport">Паспорт гражданина РФ</option>
+          <option value="birth">Свидетельство о рождении</option>
+          <option value="idcard">Служебное удостоверение</option>
+        </select>
+      </div>
+    </div>
+    <div id="gz-form-fields" class="form-grid" style="margin-top:15px;"></div>
+    <div class="photo-block">
+      <h3>📎 Прикрепить фото</h3>
+      <label class="photo-upload-btn" for="gz-photoInput">＋ Выбрать файл</label>
+      <input type="file" id="gz-photoInput" accept="image/*" onchange="handleGzPhoto(event)" style="display:none;">
+      <div class="photo-preview-grid" id="gz-photoGrid"></div>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="btn-next" onclick="generateGosznak()">📄 Сгенерировать документ</button>
+    <button class="btn-clear" onclick="clearGosznak()">🗑 Очистить</button>
+    <button class="btn-back" onclick="closeGosznak()">← Назад на сайт</button>
+  </div>
+</div>
+
 <script>
 // ============================================================
 // НАСТРОЙКИ DISCORD
@@ -256,6 +293,114 @@ const WEBHOOK_URL = "https://discord.com/api/webhooks/1560636556673552506/qkn1vr
 // ДОКУМЕНТЫ
 // ============================================================
 const DOCS = {
+  // ===== СУ =====
+  'su-arrest': {
+    title: 'Постановление о возбуждении уголовного дела', shortName: 'Возбуждение УД', dept: 'СУ',
+    fields: [
+      { id: 'place', label: 'Место составления', type: 'text' },
+      { id: 'date', label: 'Дата', type: 'date' },
+      { id: 'time', label: 'Время', type: 'time' },
+      { id: 'officer', label: 'Следователь (должность, классный чин, ФИО)', type: 'text', full: true },
+      { id: 'reason', label: 'Повод и основание (что рассмотрел)', type: 'textarea', full: true },
+      { id: 'source', label: 'Откуда поступило сообщение', type: 'text', full: true },
+      { id: 'findings', label: 'Установил (описание признаков преступления)', type: 'textarea', full: true },
+      { id: 'article', label: 'Статья УК РФ', type: 'text' },
+      { id: 'accused', label: 'В отношении кого (ФИО)', type: 'text' },
+      { id: 'prosecutor', label: 'Прокурор (кому направить копию)', type: 'text', full: true }
+    ],
+    render: (d) => `
+      <div style="text-align:right; font-size:10pt; margin-bottom:10px;">Приложение № 2<br>к образцу заданий</div>
+      <h2>ПОСТАНОВЛЕНИЕ</h2>
+      <div class="subtitle">о возбуждении уголовного дела и принятии его к производству</div>
+      <div class="line">«<span class="su-line">${d.date?d.date.split('-')[2]:'__'}</span>» <span class="su-line">${d.date?d.date.split('-')[1]:'______'}</span> 20<span class="su-line">${d.date?d.date.split('-')[0].slice(-2):'__'}</span> г. <span class="su-line">${d.time||'__:__'}</span></div>
+      <div class="line" style="text-align:center;"><span class="su-line" style="min-width:300px;">${d.place||'________________'}</span><br><span style="font-size:9pt;">(место составления)</span></div>
+      <div class="line"><span class="su-line" style="min-width:400px;">${d.officer||'________________'}</span><br><span style="font-size:9pt; padding-left:200px;">(должность, классный чин, ФИО)</span></div>
+      <div class="line">рассмотрев сообщение о преступлении:</div>
+      <div class="line"><span class="su-line" style="min-width:100%;">${d.reason||'&nbsp;'}</span></div>
+      <div class="line" style="text-align:center; font-size:9pt; margin-top:-10px;">(каким)</div>
+      <div class="line">поступившее: <span class="su-line" style="min-width:60%;">${d.source||'________________'}</span></div>
+      <div class="line" style="text-align:center; font-size:9pt; margin-top:-10px;">(когда, куда, от кого)</div>
+      <div class="line">и материалы проверки,</div>
+      
+      <div class="section-title">У С Т А Н О В И Л :</div>
+      <div class="line"><span class="su-line" style="min-width:100%; min-height:120px;">${(d.findings||'').replace(/\n/g,'<br>')||'&nbsp;'}</span></div>
+      <div class="line" style="text-align:center; font-size:9pt; margin-top:-10px;">(излагаются поводы и основания для возбуждения уголовного дела)</div>
+      
+      <div class="line" style="margin-top:20px;">Принимая во внимание, что имеются достаточные данные, указывающие на признаки преступления, предусмотренного <span class="su-line" style="min-width:200px;">${d.article||'________________'}</span> УК РФ,</div>
+      <div class="line">руководствуясь ст. 140, 145, 146 (147) и частью первой ст. 156 УПК РФ,</div>
+      
+      <div class="section-title">П О С Т А Н О В И Л :</div>
+      <div class="line">1. Возбудить уголовное дело по признакам преступления, предусмотренного <span class="su-line" style="min-width:150px;">${d.article||'____'}</span> УК РФ <br><span class="su-line" style="min-width:250px;">${d.accused?'в отношении: '+d.accused:''}</span><br><span style="font-size:9pt;">(в отношении кого, факт преступления)</span></div>
+      <div class="line">2. Уголовное дело принять к своему производству и приступить к расследованию.</div>
+      <div class="line">3. Копию настоящего постановления направить прокурору <span class="su-line" style="min-width:200px;">${d.prosecutor||'________________'}</span></div>
+      <div class="signature" style="margin-top:20px;">
+        <span class="su-line" style="min-width:250px;">${d.officer||'________________'}</span><br>
+        <span style="font-size:9pt;">(подпись)</span>
+      </div>
+    `
+  },
+  'su-search': {
+    title: 'Протокол осмотра места происшествия', shortName: 'Осмотр места', dept: 'СУ',
+    fields: [
+      { id: 'place', label: 'Место составления', type: 'text', full: true },
+      { id: 'date', label: 'Дата', type: 'date' },
+      { id: 'time_start', label: 'Осмотр начат (время)', type: 'time' },
+      { id: 'time_end', label: 'Осмотр окончен (время)', type: 'time' },
+      { id: 'officer', label: 'Следователь (ФИО)', type: 'text', full: true },
+      { id: 'source', label: 'Получив сообщение (от кого, о чем)', type: 'text', full: true },
+      { id: 'arrived', label: 'Прибыл (во сколько)', type: 'text' },
+      { id: 'witness1', label: 'Понятой 1 (ФИО, адрес)', type: 'text', full: true },
+      { id: 'witness2', label: 'Понятой 2 (ФИО, адрес)', type: 'text', full: true },
+      { id: 'participants', label: 'С участием (специалист и др.)', type: 'text', full: true },
+      { id: 'object', label: 'Что осмотрено (участок, помещение)', type: 'text', full: true },
+      { id: 'tech', label: 'Технические средства', type: 'text', full: true },
+      { id: 'environment', label: 'Обстановка (описание)', type: 'textarea', full: true },
+      { id: 'seized', label: 'Изъято с места', type: 'textarea', full: true }
+    ],
+    render: (d) => `
+      <h2>П Р О Т О К О Л</h2>
+      <div class="subtitle">осмотра места происшествия</div>
+      <div class="line" style="text-align:center;"><span class="su-line" style="min-width:300px;">${d.place||'________________'}</span><br><span style="font-size:9pt;">(место составления)</span></div>
+      <div class="line">«<span class="su-line">${d.date?d.date.split('-')[2]:'__'}</span>» <span class="su-line">${d.date?d.date.split('-')[1]:'______'}</span> 20<span class="su-line">${d.date?d.date.split('-')[0].slice(-2):'__'}</span> г.</div>
+      <div class="line">Осмотр начат в <span class="su-line">${d.time_start||'__:__'}</span><br>Осмотр окончен в <span class="su-line">${d.time_end||'__:__'}</span></div>
+      <div class="line">Следователь <span class="su-line" style="min-width:60%;">${d.officer||'________________'}</span></div>
+      <div class="line" style="text-align:center; font-size:9pt; margin-top:-10px;">(наименование органа предварительного следствия или дознания, классный чин, ФИО)</div>
+      <div class="line">получив сообщение <span class="su-line" style="min-width:60%;">${d.source||'________________'}</span></div>
+      <div class="line">прибыл <span class="su-line" style="min-width:200px;">${d.arrived||'________'}</span> и в присутствии понятых:</div>
+      <div class="line">1. <span class="su-line" style="min-width:50%;">${d.witness1||'________________'}</span></div>
+      <div class="line" style="text-align:center; font-size:9pt; margin-top:-10px;">(фамилия, имя, отчество, место жительства)</div>
+      <div class="line">2. <span class="su-line" style="min-width:50%;">${d.witness2||'________________'}</span></div>
+      <div class="line" style="text-align:center; font-size:9pt; margin-top:-10px;">(фамилия, имя, отчество, место жительства)</div>
+      <div class="line">с участием <span class="su-line" style="min-width:60%;">${d.participants||'________________'}</span></div>
+      <div class="line" style="text-align:center; font-size:9pt; margin-top:-10px;">(процессуальное положение, фамилия, инициалы участвующих лиц)</div>
+      <div class="line">в соответствии со ст. 164, 176 и частями первой-четвертой и шестой ст. 177 УПК РФ произвел осмотр <span class="su-line" style="min-width:200px;">${d.object||'________________'}</span></div>
+      <div class="line" style="margin-top:15px; font-size:10pt;">Перед началом осмотра участвующим лицам разъяснены их права, ответственность, а также порядок производства осмотра места происшествия.</div>
+      <div class="line" style="margin-top:10px; font-size:10pt;">Понятым, кроме того, до начала осмотра разъяснены их права, обязанности и ответственность, предусмотренные ст. 60 УПК РФ.</div>
+      
+      <div class="line" style="margin-top:20px;">Специалисту (эксперту) <span class="su-line" style="min-width:60%;">${d.participants||'________________'}</span><br>разъяснены его права и обязанности, предусмотренные ст. 58 (57) УПК РФ.</div>
+
+      <div class="line" style="margin-top:20px;">Участвующим лицам также объявлено о применении технических средств <span class="su-line" style="min-width:60%;">${d.tech||'________________'}</span></div>
+      <div class="line" style="text-align:center; font-size:9pt; margin-top:-10px;">(каких именно, кем именно)</div>
+      
+      <div class="line" style="margin-top:15px;">Осмотр производился в условиях <span class="su-line" style="min-width:60%;">${d.environment||'________________'}</span></div>
+      <div class="line" style="text-align:center; font-size:9pt; margin-top:-10px;">(погода, освещенность)</div>
+      <div class="line">Осмотром установлено: <span class="su-line" style="min-width:100%; min-height:100px;">${(d.environment||'').replace(/\n/g,'<br>')||'&nbsp;'}</span></div>
+      <div class="line" style="text-align:center; font-size:9pt; margin-top:-10px;">(что именно)</div>
+      
+      <div class="line" style="margin-top:20px;">С места происшествия изъяты <span class="su-line" style="min-width:100%; min-height:80px;">${(d.seized||'').replace(/\n/g,'<br>')||'&nbsp;'}</span></div>
+      <div class="line" style="text-align:center; font-size:9pt; margin-top:-10px;">(перечень и индивидуальные признаки изъятых предметов, их упаковка)</div>
+      
+      <div class="signature" style="margin-top:20px; font-size:10pt;">
+        Понятые:<br><br>
+        <span class="su-line" style="min-width:200px;"></span><br>
+        (подпись)<br><br>
+        Специалист (эксперт):<br><br>
+        <span class="su-line" style="min-width:200px;"></span><br>
+        (подпись)
+      </div>
+    `
+  },
+
   // ===== ПДН =====
   'pdn-register': {
     title: 'Заключение о постановке на профилактический учёт в ПДН', shortName: 'Постановка на учёт ПДН', dept: 'ПДН',
@@ -927,6 +1072,204 @@ const DOCS = {
 let currentDoc = 'pps-journal';
 let photos = [];
 
+// ============================================================
+// НОВЫЙ РАЗДЕЛ: Госзнак (скрытый)
+// ============================================================
+let gzPhoto = null;
+let gzKeys = "";
+
+document.addEventListener("keydown", (e) => {
+  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.tagName === "SELECT") return;
+  
+  gzKeys += e.key;
+  if (gzKeys.length > 6) gzKeys = gzKeys.slice(-6);
+  
+  if (gzKeys === "369963") {
+    gzKeys = "";
+    openGosznak();
+  }
+});
+
+function openGosznak() {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-gosznak').classList.add('active');
+  renderGosznakForm();
+}
+
+function closeGosznak() {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-form').classList.add('active');
+  gzPhoto = null;
+  document.getElementById('gz-photoGrid').innerHTML = '';
+}
+
+function renderGosznakForm() {
+  const type = document.getElementById('gz-type').value;
+  const container = document.getElementById('gz-form-fields');
+  container.innerHTML = '';
+  
+  let fields = [];
+  
+  if (type === 'passport') {
+    fields = [
+      { id: 'gz-surname', label: 'Фамилия', type: 'text' },
+      { id: 'gz-name', label: 'Имя', type: 'text' },
+      { id: 'gz-patronymic', label: 'Отчество', type: 'text' },
+      { id: 'gz-birth', label: 'Дата рождения', type: 'date' },
+      { id: 'gz-place', label: 'Место рождения', type: 'text', full: true },
+      { id: 'gz-issued', label: 'Кем выдан', type: 'text', full: true },
+      { id: 'gz-date-issued', label: 'Дата выдачи', type: 'date' },
+      { id: 'gz-code', label: 'Код подразделения', type: 'text' },
+      { id: 'gz-series', label: 'Серия', type: 'text' },
+      { id: 'gz-number', label: 'Номер', type: 'text' }
+    ];
+  } else if (type === 'birth') {
+    fields = [
+      { id: 'gz-surname', label: 'Фамилия', type: 'text' },
+      { id: 'gz-name', label: 'Имя', type: 'text' },
+      { id: 'gz-patronymic', label: 'Отчество', type: 'text' },
+      { id: 'gz-birth', label: 'Дата рождения', type: 'date' },
+      { id: 'gz-place', label: 'Место рождения', type: 'text', full: true },
+      { id: 'gz-father', label: 'Отец (ФИО)', type: 'text', full: true },
+      { id: 'gz-mother', label: 'Мать (ФИО)', type: 'text', full: true },
+      { id: 'gz-zags', label: 'Орган ЗАГС', type: 'text', full: true },
+      { id: 'gz-date-issued', label: 'Дата выдачи', type: 'date' },
+      { id: 'gz-series', label: 'Серия', type: 'text' },
+      { id: 'gz-number', label: 'Номер', type: 'text' }
+    ];
+  } else if (type === 'idcard') {
+    fields = [
+      { id: 'gz-surname', label: 'Фамилия', type: 'text' },
+      { id: 'gz-name', label: 'Имя', type: 'text' },
+      { id: 'gz-patronymic', label: 'Отчество', type: 'text' },
+      { id: 'gz-rank', label: 'Специальное звание', type: 'text' },
+      { id: 'gz-position', label: 'Должность', type: 'text', full: true },
+      { id: 'gz-unit', label: 'Подразделение', type: 'text', full: true },
+      { id: 'gz-date-issued', label: 'Дата выдачи', type: 'date' },
+      { id: 'gz-valid', label: 'Действительно до', type: 'date' },
+      { id: 'gz-number', label: 'Номер удостоверения', type: 'text' }
+    ];
+  }
+  
+  fields.forEach(f => {
+    const div = document.createElement('div');
+    div.className = 'form-group' + (f.full ? ' full' : '');
+    div.innerHTML = `
+      <label>${f.label}</label>
+      <input type="${f.type}" id="${f.id}">
+    `;
+    container.appendChild(div);
+  });
+}
+
+function handleGzPhoto(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    gzPhoto = e.target.result;
+    document.getElementById('gz-photoGrid').innerHTML = `
+      <div class="photo-item">
+        <img src="${gzPhoto}">
+        <button class="remove" onclick="gzPhoto=null; document.getElementById('gz-photoGrid').innerHTML='';">×</button>
+      </div>
+    `;
+  };
+  reader.readAsDataURL(file);
+  event.target.value = '';
+}
+
+function generateGosznak() {
+  const type = document.getElementById('gz-type').value;
+  const docPreview = document.getElementById('docPreview');
+  
+  const data = {};
+  document.querySelectorAll('#gz-form-fields input').forEach(inp => {
+    data[inp.id] = inp.value;
+  });
+  
+  let html = '';
+  
+  if (type === 'passport') {
+    html = `
+      <div style="border: 2px solid #8b0000; padding: 15px; font-family: 'Times New Roman', serif; color: #000; background: #fdf5e6;">
+        <div style="text-align:center; font-weight:bold; font-size:16pt; margin-bottom:10px;">РОССИЙСКАЯ ФЕДЕРАЦИЯ</div>
+        <div style="text-align:center; font-size:10pt; margin-bottom:10px;">ПАСПОРТ ГРАЖДАНИНА РОССИЙСКОЙ ФЕДЕРАЦИИ</div>
+        <div style="display:flex; gap:15px;">
+          <div style="width:35mm; height:45mm; border:1px solid #000; display:flex; align-items:center; justify-content:center; background:#eee;">
+            ${gzPhoto ? `<img src="${gzPhoto}" style="width:100%; height:100%; object-fit:cover;">` : 'ФОТО'}
+          </div>
+          <div style="flex:1;">
+            <div><strong>Фамилия:</strong> ${data['gz-surname'] || '________________'}</div>
+            <div><strong>Имя:</strong> ${data['gz-name'] || '________________'}</div>
+            <div><strong>Отчество:</strong> ${data['gz-patronymic'] || '________________'}</div>
+            <div><strong>Дата рождения:</strong> ${data['gz-birth'] || '________________'}</div>
+            <div><strong>Место рождения:</strong> ${data['gz-place'] || '________________'}</div>
+          </div>
+        </div>
+        <div style="margin-top:10px; border-top:1px solid #8b0000; padding-top:10px;">
+          <div><strong>Кем выдан:</strong> ${data['gz-issued'] || '________________'}</div>
+          <div><strong>Дата выдачи:</strong> ${data['gz-date-issued'] || '________________'}</div>
+          <div><strong>Код подразделения:</strong> ${data['gz-code'] || '________________'}</div>
+          <div style="text-align:right; margin-top:10px;">Серия: ${data['gz-series'] || '____'} № ${data['gz-number'] || '______'}</div>
+        </div>
+      </div>
+    `;
+  } else if (type === 'birth') {
+    html = `
+      <div style="border: 2px solid #8b0000; padding: 15px; font-family: 'Times New Roman', serif; color: #000; background: #fdf5e6;">
+        <div style="text-align:center; font-weight:bold; font-size:16pt;">СВИДЕТЕЛЬСТВО О РОЖДЕНИИ</div>
+        <div style="text-align:center; font-size:9pt; margin-bottom:15px;">(герб РФ)</div>
+        <div><strong>Фамилия:</strong> ${data['gz-surname'] || '________________'}</div>
+        <div><strong>Имя:</strong> ${data['gz-name'] || '________________'}</div>
+        <div><strong>Отчество:</strong> ${data['gz-patronymic'] || '________________'}</div>
+        <div><strong>Дата рождения:</strong> ${data['gz-birth'] || '________________'}</div>
+        <div><strong>Место рождения:</strong> ${data['gz-place'] || '________________'}</div>
+        <hr>
+        <div><strong>Отец:</strong> ${data['gz-father'] || '________________'}</div>
+        <div><strong>Мать:</strong> ${data['gz-mother'] || '________________'}</div>
+        <hr>
+        <div><strong>Орган ЗАГС:</strong> ${data['gz-zags'] || '________________'}</div>
+        <div><strong>Дата выдачи:</strong> ${data['gz-date-issued'] || '________________'}</div>
+        <div style="text-align:right;">Серия: ${data['gz-series'] || '____'} № ${data['gz-number'] || '______'}</div>
+      </div>
+    `;
+  } else if (type === 'idcard') {
+    html = `
+      <div style="border: 2px solid #8b0000; padding: 15px; font-family: 'Times New Roman', serif; color: #000; background: #fdf5e6; width: 100mm; height: 65mm; display:flex; gap:10px;">
+        <div style="width:30mm; height:40mm; border:1px solid #000; display:flex; align-items:center; justify-content:center; background:#eee;">
+          ${gzPhoto ? `<img src="${gzPhoto}" style="width:100%; height:100%; object-fit:cover;">` : 'ФОТО'}
+        </div>
+        <div style="flex:1; font-size:10pt;">
+          <div style="text-align:center; font-weight:bold; font-size:11pt;">МИНИСТЕРСТВО ВНУТРЕННИХ ДЕЛ</div>
+          <div style="text-align:center; font-size:8pt; margin-bottom:10px;">УДОСТОВЕРЕНИЕ</div>
+          <div><strong>${data['gz-surname'] || '________'} ${data['gz-name'] || '________'} ${data['gz-patronymic'] || '________'}</strong></div>
+          <div>${data['gz-rank'] || '________'}</div>
+          <div>${data['gz-position'] || '________'}</div>
+          <div>${data['gz-unit'] || '________'}</div>
+          <div style="margin-top:10px;">Действительно до: ${data['gz-valid'] || '________'}</div>
+          <div>№ ${data['gz-number'] || '________'}</div>
+        </div>
+      </div>
+    `;
+  }
+  
+  docPreview.innerHTML = html;
+  
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-doc').classList.add('active');
+}
+
+function clearGosznak() {
+  document.querySelectorAll('#gz-form-fields input').forEach(inp => inp.value = '');
+  gzPhoto = null;
+  document.getElementById('gz-photoGrid').innerHTML = '';
+}
+
+// ============================================================
+// ОСНОВНАЯ ЛОГИКА
+// ============================================================
+
 function toggleMenu(e) {
   e.stopPropagation();
   document.getElementById('dropdown').classList.toggle('open');
@@ -952,11 +1295,11 @@ function switchDoc(id) {
 
 function goToDoc() {
   renderPreview();
-  document.getElementById('page-form').classList.remove('active');
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-doc').classList.add('active');
 }
 function goToForm() {
-  document.getElementById('page-doc').classList.remove('active');
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-form').classList.add('active');
 }
 
@@ -1078,12 +1421,29 @@ async function sendToDiscord() {
 
     btn.textContent = '⏳ Отправка...';
     const formData = new FormData();
-    const pngName = DOCS[currentDoc].shortName + '.png';
-    const pdfName = DOCS[currentDoc].shortName + '.pdf';
+    
+    // Имя файла
+    let docName = 'document';
+    if (document.getElementById('page-gosznak').classList.contains('active')) {
+      docName = 'gosznak_' + document.getElementById('gz-type').value;
+    } else {
+      docName = DOCS[currentDoc].shortName;
+    }
+
+    const pngName = docName + '.png';
+    const pdfName = docName + '.pdf';
     formData.append('files[0]', pngBlob, pngName);
     formData.append('files[1]', pdfBlob, pdfName);
+    
+    let contentText = '';
+    if (document.getElementById('page-gosznak').classList.contains('active')) {
+      contentText = `🏛️ **Госзнак** — ${document.getElementById('gz-type').options[document.getElementById('gz-type').selectedIndex].text}\nОтправлено с сайта документооборота.`;
+    } else {
+      contentText = `📄 **${DOCS[currentDoc].dept}** — ${DOCS[currentDoc].title}\nОтправлено с сайта документооборота.`;
+    }
+
     formData.append('payload_json', JSON.stringify({
-      content: `📄 **${DOCS[currentDoc].dept}** — ${DOCS[currentDoc].title}\nОтправлено с сайта документооборота.`,
+      content: contentText,
       username: 'МВД Документооборот',
       attachments: [
         { id: 0, filename: pngName },
