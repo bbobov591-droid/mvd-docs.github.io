@@ -134,7 +134,6 @@
   }
   .document .ping-block .ping-line { margin: 4px 0; }
   
-  /* Специфично для СУ (линии как в бланке) */
   .su-line { border-bottom: 1px solid #000; display: inline-block; min-width: 60px; }
   .su-full-line { border-bottom: 1px solid #000; display: block; width: 100%; height: 1.2em; margin: 4px 0; }
 
@@ -262,9 +261,11 @@
       <div class="form-group full">
         <label>Тип документа</label>
         <select id="gz-type" onchange="renderGosznakForm()">
-          <option value="passport">Паспорт гражданина РФ</option>
+          <option value="passport">Паспорт РФ (главная)</option>
+          <option value="passport_full">Паспорт РФ (разворот с фото)</option>
           <option value="birth">Свидетельство о рождении</option>
           <option value="idcard">Служебное удостоверение</option>
+          <option value="snils">СНИЛС</option>
         </select>
       </div>
     </div>
@@ -1123,6 +1124,18 @@ function renderGosznakForm() {
       { id: 'gz-series', label: 'Серия', type: 'text' },
       { id: 'gz-number', label: 'Номер', type: 'text' }
     ];
+  } else if (type === 'passport_full') {
+    fields = [
+      { id: 'gz-p1', label: 'Кем выдан (МФЦ)', type: 'text', full: true },
+      { id: 'gz-p2', label: 'Дата выдачи', type: 'text' },
+      { id: 'gz-p3', label: 'Код подразделения', type: 'text' },
+      { id: 'gz-p4', label: 'Фамилия', type: 'text' },
+      { id: 'gz-p5', label: 'Имя', type: 'text' },
+      { id: 'gz-p6', label: 'Отчество', type: 'text' },
+      { id: 'gz-p7', label: 'Дата рождения', type: 'text' },
+      { id: 'gz-p8', label: 'Место рождения', type: 'text', full: true },
+      { id: 'gz-p9', label: 'Серия и номер', type: 'text' }
+    ];
   } else if (type === 'birth') {
     fields = [
       { id: 'gz-surname', label: 'Фамилия', type: 'text' },
@@ -1148,6 +1161,17 @@ function renderGosznakForm() {
       { id: 'gz-date-issued', label: 'Дата выдачи', type: 'date' },
       { id: 'gz-valid', label: 'Действительно до', type: 'date' },
       { id: 'gz-number', label: 'Номер удостоверения', type: 'text' }
+    ];
+  } else if (type === 'snils') {
+    fields = [
+      { id: 'gz-s1', label: 'Номер СНИЛС (например, 0463-6930-6730-7937)', type: 'text' },
+      { id: 'gz-s2', label: 'Фамилия', type: 'text' },
+      { id: 'gz-s3', label: 'Имя', type: 'text' },
+      { id: 'gz-s4', label: 'Отчество', type: 'text' },
+      { id: 'gz-s5', label: 'Дата рождения', type: 'text' },
+      { id: 'gz-s6', label: 'Место рождения', type: 'text' },
+      { id: 'gz-s7', label: 'Пол', type: 'text' },
+      { id: 'gz-s8', label: 'Дата регистрации', type: 'text' }
     ];
   }
   
@@ -1215,6 +1239,50 @@ function generateGosznak() {
         </div>
       </div>
     `;
+  } else if (type === 'passport_full') {
+    html = `
+      <div style="width: 125mm; height: 88mm; border: 1px solid #8b0000; background: #fdf5e6; position: relative; font-family: 'Times New Roman', serif; padding: 5mm; box-sizing: border-box; font-size: 9pt; color: #000;">
+        <!-- Верхняя часть -->
+        <div style="text-align:center; letter-spacing: 2px; font-size: 10pt; margin-bottom: 5mm;">Р О С С И Й С К А Я   Ф Е Д Е Р А Ц И Я</div>
+        
+        <div style="display: flex; justify-content: space-between; margin-bottom: 3mm;">
+          <div style="border-bottom: 1px solid #000; width: 40%; text-align: center; font-size: 8pt;">Кем выдан (МФЦ)</div>
+          <div style="border-bottom: 1px solid #000; width: 25%; text-align: center; font-size: 8pt;">Дата выдачи</div>
+        </div>
+        
+        <div style="text-align: center; font-size: 8pt; margin-bottom: 2mm;">
+          Многофункциональным центром<br>
+          предоставления государственных и<br>
+          муниципальных услуг
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 5mm;">
+          <div style="border-bottom: 1px solid #000; width: 40%; text-align: center; font-size: 8pt;">${data['gz-p1'] || ''}</div>
+          <div style="border-bottom: 1px solid #000; width: 25%; text-align: center; font-size: 8pt;">${data['gz-p2'] || ''}</div>
+          <div style="border-bottom: 1px solid #000; width: 25%; text-align: center; font-size: 8pt;">${data['gz-p3'] || ''}</div>
+        </div>
+
+        <!-- Печать (заглушка) -->
+        <div style="text-align: center; margin-bottom: 5mm;">
+          <div style="display: inline-block; width: 25mm; height: 25mm; border: 1px dashed #999; border-radius: 50%; color: #999; font-size: 8pt; line-height: 25mm;">МЕСТО ДЛЯ ПЕЧАТИ</div>
+        </div>
+
+        <!-- Нижняя часть с фото -->
+        <div style="display: flex; gap: 5mm;">
+          <div style="width: 35mm; height: 45mm; border: 1px solid #000; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 8pt; color: #999;">
+            ${gzPhoto ? `<img src="${gzPhoto}" style="width:100%; height:100%; object-fit:cover;">` : 'ФОТО'}
+          </div>
+          <div style="flex: 1;">
+            <div style="display: flex; margin-bottom: 2mm;"><span style="width: 25mm; font-size: 8pt; color: #666;">Фамилия</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 10pt;">${data['gz-p4'] || ''}</span></div>
+            <div style="display: flex; margin-bottom: 2mm;"><span style="width: 25mm; font-size: 8pt; color: #666;">Имя</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 10pt;">${data['gz-p5'] || ''}</span></div>
+            <div style="display: flex; margin-bottom: 2mm;"><span style="width: 25mm; font-size: 8pt; color: #666;">Отчество</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 10pt;">${data['gz-p6'] || ''}</span></div>
+            <div style="display: flex; margin-bottom: 2mm;"><span style="width: 25mm; font-size: 8pt; color: #666;">Дата рождения</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 9pt;">${data['gz-p7'] || ''}</span></div>
+            <div style="display: flex; margin-bottom: 2mm;"><span style="width: 25mm; font-size: 8pt; color: #666;">Место рождения</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 9pt;">${data['gz-p8'] || ''}</span></div>
+            <div style="display: flex; margin-top: 5mm;"><span style="width: 25mm; font-size: 8pt; color: #666;">Серия и номер</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 9pt;">${data['gz-p9'] || ''}</span></div>
+          </div>
+        </div>
+      </div>
+    `;
   } else if (type === 'birth') {
     html = `
       <div style="border: 2px solid #8b0000; padding: 15px; font-family: 'Times New Roman', serif; color: #000; background: #fdf5e6;">
@@ -1250,6 +1318,27 @@ function generateGosznak() {
           <div style="margin-top:10px;">Действительно до: ${data['gz-valid'] || '________'}</div>
           <div>№ ${data['gz-number'] || '________'}</div>
         </div>
+      </div>
+    `;
+  } else if (type === 'snils') {
+    html = `
+      <div style="width: 125mm; height: 88mm; border: 2px solid #4a7c59; background: #f0f8f0; position: relative; font-family: 'Times New Roman', serif; padding: 5mm; box-sizing: border-box; color: #000;">
+        <div style="text-align: center; font-size: 11pt; font-weight: bold; margin-bottom: 2mm;">Российская Федерация</div>
+        <div style="text-align: center; font-size: 14pt; font-weight: bold; margin-bottom: 2mm; letter-spacing: 1px;">СТРАХОВОЕ СВИДЕТЕЛЬСТВО</div>
+        <div style="text-align: center; font-size: 10pt; margin-bottom: 5mm;">ОБЯЗАТЕЛЬНОГО ПЕНСИОННОГО СТРАХОВАНИЯ</div>
+        
+        <div style="text-align: center; font-size: 16pt; font-weight: bold; letter-spacing: 2px; margin-bottom: 5mm;">${data['gz-s1'] || ''}</div>
+        
+        <div style="display: flex; margin-bottom: 2mm;"><span style="width: 15mm; font-size: 9pt; color: #555;">Ф.И.О.</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 10pt;">${data['gz-s2'] || ''} ${data['gz-s3'] || ''} ${data['gz-s4'] || ''}</span></div>
+        
+        <div style="display: flex; margin-bottom: 2mm;"><span style="width: 40mm; font-size: 9pt; color: #555;">Дата и место рождения</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 10pt;">${data['gz-s5'] || ''} ${data['gz-s6'] || ''}</span></div>
+        
+        <div style="display: flex; margin-bottom: 2mm;"><span style="width: 15mm; font-size: 9pt; color: #555;">Пол</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 10pt;">${data['gz-s7'] || ''}</span></div>
+        
+        <div style="display: flex; margin-bottom: 2mm;"><span style="width: 30mm; font-size: 9pt; color: #555;">Дата регистрации</span> <span style="border-bottom: 1px solid #000; flex: 1; font-size: 10pt;">${data['gz-s8'] || ''}</span></div>
+        
+        <!-- Заглушка для гильоширного знака -->
+        <div style="position: absolute; bottom: 5mm; right: 5mm; width: 30mm; height: 30mm; border: 1px dashed #4a7c59; border-radius: 50%; color: #4a7c59; text-align: center; line-height: 30mm; font-size: 7pt;">ЗНАК</div>
       </div>
     `;
   }
@@ -1422,25 +1511,21 @@ async function sendToDiscord() {
     btn.textContent = '⏳ Отправка...';
     const formData = new FormData();
     
-    // Имя файла
     let docName = 'document';
+    let contentText = '';
+
     if (document.getElementById('page-gosznak').classList.contains('active')) {
       docName = 'gosznak_' + document.getElementById('gz-type').value;
+      contentText = `🏛️ **Госзнак** — ${document.getElementById('gz-type').options[document.getElementById('gz-type').selectedIndex].text}\nОтправлено с сайта документооборота.`;
     } else {
       docName = DOCS[currentDoc].shortName;
+      contentText = `📄 **${DOCS[currentDoc].dept}** — ${DOCS[currentDoc].title}\nОтправлено с сайта документооборота.`;
     }
 
     const pngName = docName + '.png';
     const pdfName = docName + '.pdf';
     formData.append('files[0]', pngBlob, pngName);
     formData.append('files[1]', pdfBlob, pdfName);
-    
-    let contentText = '';
-    if (document.getElementById('page-gosznak').classList.contains('active')) {
-      contentText = `🏛️ **Госзнак** — ${document.getElementById('gz-type').options[document.getElementById('gz-type').selectedIndex].text}\nОтправлено с сайта документооборота.`;
-    } else {
-      contentText = `📄 **${DOCS[currentDoc].dept}** — ${DOCS[currentDoc].title}\nОтправлено с сайта документооборота.`;
-    }
 
     formData.append('payload_json', JSON.stringify({
       content: contentText,
