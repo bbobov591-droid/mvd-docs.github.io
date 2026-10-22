@@ -191,6 +191,7 @@
   <div class="section-label">СУ (Следствие)</div>
   <button class="nav-btn" data-doc="su-arrest" onclick="switchDoc('su-arrest')">Постановление о возбуждении УД</button>
   <button class="nav-btn" data-doc="su-search" onclick="switchDoc('su-search')">Протокол осмотра места</button>
+ <button class="nav-btn" data-doc="su-interrogation" onclick="switchDoc('su-interrogation')">Протокол допроса</button>
 
   <div class="section-label">ПДН</div>
   <button class="nav-btn" data-doc="pdn-register" onclick="switchDoc('pdn-register')">Постановка на учёт</button>
@@ -398,7 +399,7 @@ const DOCS = {
       </div>
     `
   },
-  'su-interrogation': {
+    'su-interrogation': {
     title: 'Протокол допроса', shortName: 'Протокол допроса', dept: 'СУ',
     fields: [
       { id: 'place', label: 'Место допроса', type: 'text', full: true },
@@ -406,25 +407,21 @@ const DOCS = {
       { id: 'time_start', label: 'Начало (время)', type: 'time' },
       { id: 'time_end', label: 'Окончание (время)', type: 'time' },
       { id: 'officer', label: 'Следователь (должность, звание, ФИО)', type: 'text', full: true },
-      { id: 'person_status', label: 'Кто допрашивается (свидетель, потерпевший, подозреваемый)', type: 'text', full: true },
+      { id: 'person_status', label: 'Кто допрашивается', type: 'text', full: true },
       { id: 'fio', label: 'Ф.И.О. допрашиваемого', type: 'text', full: true },
       { id: 'birth', label: 'Дата рождения', type: 'text' },
       { id: 'address', label: 'Место жительства', type: 'text', full: true },
       { id: 'passport', label: 'Паспорт (серия, номер, кем выдан)', type: 'text', full: true },
-      { id: 'rights', label: 'Права разъяснены (ст. УПК)', type: 'text', full: true },
       { id: 'testimony', label: 'Показания по существу', type: 'textarea', full: true },
       { id: 'questions', label: 'Вопросы и ответы', type: 'textarea', full: true }
     ],
     render: (d) => `
       <h2>ПРОТОКОЛ</h2>
       <div class="subtitle">допроса</div>
-      
       <div class="line">«<span class="field">${d.date?d.date.split('-')[2]:'__'}</span>» <span class="field">${d.date?d.date.split('-')[1]:'______'}</span> 20<span class="field">${d.date?d.date.split('-')[0].slice(-2):'__'}</span> г.</div>
       <div class="line">Место допроса: <span class="field" style="min-width:300px;">${d.place||'________________'}</span></div>
       <div class="line">Допрос начат в <span class="field">${d.time_start||'__:__'}</span>, окончен в <span class="field">${d.time_end||'__:__'}</span></div>
-      
       <div class="line" style="margin-top:16px;">Следователь: <span class="field" style="min-width:300px;">${d.officer||'________________'}</span></div>
-      
       <div class="line" style="margin-top:12px;">Допрошен в качестве: <span class="field" style="min-width:250px;">${d.person_status||'________________'}</span></div>
       
       <div class="section-title">СВЕДЕНИЯ О ДОПРАШИВАЕМОМ:</div>
@@ -434,7 +431,7 @@ const DOCS = {
       <div class="line">Паспорт: <span class="field" style="min-width:300px;">${d.passport||'________________'}</span></div>
       
       <div class="line" style="margin-top:12px; font-size:10pt;">
-        <em>${d.rights || 'Права, предусмотренные УПК РФ, разъяснены. Об ответственности за отказ от дачи показаний и за дачу заведомо ложных показаний предупрежден.'}</em>
+        <em>Права, предусмотренные УПК РФ, разъяснены. Об ответственности за отказ от дачи показаний и за дачу заведомо ложных показаний предупрежден.</em>
       </div>
       
       <div class="section-title">ПОКАЗАНИЯ:</div>
